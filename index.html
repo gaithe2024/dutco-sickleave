@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b2545">
+<meta name="robots" content="noindex, nofollow">
+<title>DUTCO SICKLEAVE SYSTEM</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%231d6fd8%27/%3E%3Cstop offset=%271%27 stop-color=%27%2322b8cf%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27url(%23g)%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-family=%27Arial,sans-serif%27 font-weight=%27800%27 font-size=%2726%27 fill=%27white%27 text-anchor=%27middle%27%3EDS%3C/text%3E%3C/svg%3E">
+<meta name="description" content="DUTCO SICKLEAVE SYSTEM - sick leave verification for DUTCO HR. Designed & developed by GHAITH ALGHAITHI.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="DUTCO SLS">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b2545; --navy-2:#13315c; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0;
+    --bg:#f4f6fa; --card:#ffffff; --accent:#1d6fd8;
+    --green:#0f9d58; --green-bg:#e7f6ee; --amber:#c77700; --amber-bg:#fff4e0; --red:#d32f2f; --red-bg:#fdecec;
+    --radius:14px; --shadow:0 1px 2px rgba(15,23,42,.06),0 4px 16px rgba(15,23,42,.06);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  button,input,select,textarea{font:inherit}
+  .hidden{display:none!important}
+  header.top{position:sticky;top:0;z-index:10;background:var(--navy);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;gap:10px}
+  .brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+  .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#1d6fd8,#22b8cf);display:grid;place-items:center;font-weight:800;font-size:13px;flex:none;color:#fff}
+  .brand b{font-size:13px;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .brand small{display:block;opacity:.7;font-size:11px;font-weight:500;letter-spacing:0}
+  .iconbtn{background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:10px;padding:8px 12px;font-weight:600;font-size:13px;cursor:pointer}
+  main{max-width:860px;margin:0 auto;padding:16px 16px 90px}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
+  h1{font-size:22px;margin:0 0 4px} h2{font-size:17px;margin:0 0 12px} p.sub{color:var(--muted);margin:0 0 16px}
+  label{display:block;font-size:13px;font-weight:600;color:#334155;margin:12px 0 6px}
+  input,select,textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);outline:none}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,111,216,.15)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:11px;padding:13px 16px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff;width:100%}
+  .btn:disabled{opacity:.55;cursor:default}
+  .btn.ghost{background:#eef2f7;color:var(--ink)} .btn.danger{background:var(--red)} .btn.sm{width:auto;padding:8px 12px;font-size:13px;border-radius:9px}
+  .row{display:flex;gap:8px;flex-wrap:wrap} .row>*{flex:1}
+  .err{color:var(--red);font-size:13px;margin-top:10px;min-height:1em}
+  .center-wrap{min-height:100vh;display:grid;place-items:center;padding:20px}
+  .auth{width:100%;max-width:400px}
+  .auth .logo{width:52px;height:52px;font-size:18px;border-radius:14px;margin-bottom:14px}
+
+  /* Upload */
+  .drop{border:2px dashed #c7d2e0;border-radius:var(--radius);padding:26px 16px;text-align:center;background:#fafcff;cursor:pointer}
+  .drop svg{width:44px;height:44px;color:var(--accent)}
+  .drop b{display:block;margin-top:8px} .drop span{color:var(--muted);font-size:13px}
+  .preview{margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid var(--line);max-height:320px;display:grid;place-items:center;background:#f8fafc}
+  .preview img{max-width:100%;max-height:320px;display:block}
+  .preview .pdf{padding:24px;color:var(--muted);font-weight:600}
+  .items{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+  .item{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px;background:#fbfcfe}
+  .item .pic{width:56px;height:72px;border-radius:8px;overflow:hidden;flex:none;background:#eef2f7;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--muted);position:relative}
+  .item .pic img{width:100%;height:100%;object-fit:cover}
+  .item .pic .n{position:absolute;left:3px;bottom:3px;background:rgba(15,23,42,.75);color:#fff;font-size:10px;font-weight:700;border-radius:5px;padding:0 5px}
+  .item .f{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+  .item input{padding:9px 10px;font-size:14px;border-radius:8px}
+  .item .x{width:30px;height:30px;border-radius:50%;border:0;background:#e2e8f0;color:#334155;font-weight:800;cursor:pointer;flex:none}
+  .addmore{border:1.5px dashed #c7d2e0;border-radius:12px;padding:11px;text-align:center;color:var(--accent);font-weight:700;cursor:pointer;background:#fff}
+  .reasons{margin-top:10px}
+  .reasons .flag{font-size:13px;padding:8px 10px}
+  .thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin-top:12px}
+  .thumb{position:relative;aspect-ratio:3/4;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#f8fafc;display:grid;place-items:center}
+  .thumb img{width:100%;height:100%;object-fit:cover}
+  .thumb .pdf{font-size:12px;font-weight:700;color:var(--muted);padding:6px;text-align:center;word-break:break-all}
+  .thumb .x{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(15,23,42,.75);color:#fff;font-weight:700;cursor:pointer;line-height:24px;padding:0}
+  .thumb .n{position:absolute;left:4px;bottom:4px;background:rgba(15,23,42,.75);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px}
+  .thumb.add{border-style:dashed;color:var(--accent);font-weight:800;font-size:26px;cursor:pointer}
+  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+  .summary div{border-radius:12px;padding:10px;text-align:center;font-size:12px;font-weight:700;letter-spacing:.03em}
+  .summary b{display:block;font-size:22px}
+  .summary .g{background:var(--green-bg);color:var(--green)} .summary .a{background:var(--amber-bg);color:var(--amber)} .summary .r{background:var(--red-bg);color:var(--red)}
+  .res{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:10px}
+  .res .bar{padding:10px 14px;color:#fff;font-weight:800;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .res .bar small{font-weight:600;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .res .body{padding:12px 14px}
+  .res.ERROR .bar{background:#64748b}
+  .progress{height:6px;border-radius:6px;background:#e5eaf2;overflow:hidden;margin-top:14px}
+  .progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+  .steps{font-size:13px;color:var(--muted);margin-top:8px}
+
+  /* Verdict */
+  .verdict{border-radius:var(--radius);padding:22px 18px;text-align:center;color:#fff;margin-bottom:14px}
+  .verdict .big{font-size:26px;font-weight:800;letter-spacing:.02em}
+  .verdict p{margin:6px 0 0;opacity:.95}
+  .v-GENUINE{background:linear-gradient(135deg,#0f9d58,#12b76a)}
+  .v-REVIEW{background:linear-gradient(135deg,#c77700,#f59e0b)}
+  .v-FORGED{background:linear-gradient(135deg,#b71c1c,#e53935);animation:pulse 1.4s ease-in-out 2}
+  @keyframes pulse{50%{transform:scale(1.02)}}
+  dl.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;margin:0;font-size:14px}
+  dl.kv dt{color:var(--muted)} dl.kv dd{margin:0;font-weight:600;word-break:break-word}
+
+  /* Admin */
+  .tabs{display:flex;gap:6px;background:#e7ecf3;padding:4px;border-radius:12px;margin-bottom:14px}
+  .tabs button{flex:1;border:0;background:transparent;padding:10px;border-radius:9px;font-weight:700;color:#475569;cursor:pointer}
+  .tabs button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+  .stat{background:#fff;border-radius:12px;padding:10px;text-align:center;box-shadow:var(--shadow);cursor:pointer;border:2px solid transparent}
+  .stat.on{border-color:var(--accent)}
+  .stat b{display:block;font-size:20px} .stat span{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  .stat.g b{color:var(--green)} .stat.a b{color:var(--amber)} .stat.r b{color:var(--red)}
+  .log{display:flex;gap:12px;align-items:center;background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:var(--shadow);cursor:pointer;border-left:5px solid var(--line)}
+  .log.GENUINE{border-left-color:var(--green)} .log.REVIEW{border-left-color:var(--amber)} .log.FORGED{border-left-color:var(--red);background:var(--red-bg)}
+  .log .main{flex:1;min-width:0}
+  .log .name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .log .meta{font-size:12px;color:var(--muted)}
+  .pill{display:inline-block;font-size:11px;font-weight:800;padding:4px 8px;border-radius:999px;letter-spacing:.04em;white-space:nowrap}
+  .pill.GENUINE{background:var(--green-bg);color:var(--green)} .pill.REVIEW{background:var(--amber-bg);color:var(--amber)} .pill.FORGED{background:var(--red);color:#fff}
+  .pill.dec{background:#e8eefc;color:#1e40af}
+  .flag{padding:10px 12px;border-radius:10px;margin-bottom:6px;font-size:14px}
+  .flag.red{background:var(--red-bg);color:#8e1b1b;border-left:4px solid var(--red)}
+  .flag.amber{background:var(--amber-bg);color:#7a4a00;border-left:4px solid var(--amber)}
+  .user{display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+  .user:last-child{border-bottom:0}
+  .avatar{width:38px;height:38px;border-radius:50%;background:#dbe6f5;color:var(--navy-2);display:grid;place-items:center;font-weight:800;flex:none}
+  .user .main{flex:1;min-width:0} .user .name{font-weight:700} .user .meta{font-size:12px;color:var(--muted)}
+  .empty{text-align:center;color:var(--muted);padding:30px 10px}
+
+  /* Modal */
+  .modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+  .sheet{background:var(--bg);width:100%;max-width:720px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom))}
+  @media(min-width:760px){.modal{align-items:center}.sheet{border-radius:18px}}
+  .sheet .imgbox{background:#fff;border-radius:12px;overflow:hidden;margin-bottom:12px;text-align:center}
+  .sheet .imgbox img{max-width:100%;display:block;margin:0 auto}
+  .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#0f172a;color:#fff;padding:11px 16px;border-radius:10px;font-size:14px;z-index:99;max-width:90vw}
+  .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .credit{text-align:center;font-size:12px;color:var(--muted);margin-top:18px;letter-spacing:.02em}
+  .credit b{color:var(--navy-2);letter-spacing:.06em}
+  .note{font-size:12px;color:var(--muted);margin-top:10px}
+  @media(max-width:420px){.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="v-loading" class="center-wrap"><div class="spinner" style="border-color:#cbd5e1;border-top-color:#1d6fd8;width:30px;height:30px"></div></div>
+
+<!-- Not configured yet -->
+<div id="v-pending" class="center-wrap hidden">
+  <div class="card auth" style="text-align:center">
+    <div class="logo" style="margin:0 auto 14px">DS</div>
+    <h1>DUTCO SICKLEAVE SYSTEM</h1>
+    <p class="sub" style="margin-bottom:0">The system is being set up and will be available shortly.</p>
+    <div class="credit">Designed &amp; developed by <b>GHAITH ALGHAITHI</b></div>
+  </div>
+</div>
+
+<!-- First-time setup -->
+<div id="v-setup" class="center-wrap hidden">
+  <form class="card auth" id="f-setup">
+    <div class="logo">DS</div>
+    <h1>First-time setup</h1>
+    <p class="sub">Create the administrator account for DUTCO SICKLEAVE SYSTEM. This screen appears only once.</p>
+    <label>Full name</label><input name="fullName" required autocomplete="name">
+    <label>Admin username</label><input name="username" required autocapitalize="none" autocomplete="username" pattern="[a-z0-9._\-]{3,30}">
+    <label>Password (min 8)</label><input name="password" type="password" required minlength="8" autocomplete="new-password">
+    <div style="margin-top:18px"><button class="btn">Create admin</button></div>
+    <div class="err"></div>
+    <div class="credit">Designed &amp; developed by <b>GHAITH ALGHAITHI</b></div>
+  </form>
+</div>
+
+<!-- Login -->
+<div id="v-login" class="center-wrap hidden">
+  <form class="card auth" id="f-login">
+    <div class="logo">DS</div>
+    <h1>DUTCO SICKLEAVE SYSTEM</h1>
+    <p class="sub">HR access only. Sign in to verify employee sick leave certificates.</p>
+    <label>Username</label><input name="username" required autocapitalize="none" autocomplete="username">
+    <label>Password</label><input name="password" type="password" required autocomplete="current-password">
+    <div style="margin-top:18px"><button class="btn">Sign in</button></div>
+    <div class="err"></div>
+    <div class="credit">Designed &amp; developed by <b>GHAITH ALGHAITHI</b></div>
+  </form>
+</div>
+
+<!-- App -->
+<div id="v-app" class="hidden">
+  <header class="top">
+    <div class="brand"><div class="logo">DS</div><div style="min-width:0"><b>DUTCO SICKLEAVE SYSTEM</b><small id="who"></small></div></div>
+    <button class="iconbtn" id="b-logout">Sign out</button>
+  </header>
+  <main>
+    <div class="tabs hidden" id="admin-tabs">
+      <button data-tab="upload" class="on">Check</button>
+      <button data-tab="logs">Records</button>
+      <button data-tab="users">Users</button>
+    </div>
+
+    <!-- Upload / check -->
+    <section id="t-upload">
+      <div id="result"></div>
+      <div class="card">
+        <h2>Check sick leave</h2>
+        <p class="sub">Photograph or upload the employee's certificate(s). Up to 10 at once. Accepted: DHA, DOH Abu Dhabi, MOHAP / EHS and all UAE emirates.</p>
+        <label class="drop" id="drop">
+          <input type="file" id="file" accept="image/*,application/pdf" multiple class="hidden">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="4"/></svg>
+          <b id="drop-title">Tap to take photo or choose certificates</b>
+          <span>JPG, PNG or PDF · max 10 MB each · up to 10 files</span>
+        </label>
+        <div id="thumbs" class="items hidden"></div>
+        <div id="prog" class="hidden"><div class="progress"><i id="bar"></i></div><div class="steps" id="step"></div></div>
+        <div style="margin-top:14px"><button class="btn" id="b-check" disabled>Verify sick leave</button></div>
+        <div class="err" id="up-err"></div>
+      </div>
+    </section>
+
+    <!-- Admin: records -->
+    <section id="t-logs" class="hidden">
+      <div class="stats" id="stats"></div>
+      <div class="card" style="padding:12px">
+        <input id="q" placeholder="Search name, username, reference…" autocomplete="off">
+      </div>
+      <div id="logs"></div>
+      <p class="note">Records and images are deleted automatically 30 days after upload.</p>
+    </section>
+
+    <!-- Admin: users -->
+    <section id="t-users" class="hidden">
+      <div class="card">
+        <h2>Add HR user</h2>
+        <form id="f-user">
+          <div class="row">
+            <div><label>Full name</label><input name="fullName" required></div>
+            <div><label>Staff ID (optional)</label><input name="employeeId"></div>
+          </div>
+          <div class="row">
+            <div><label>Username</label><input name="username" required autocapitalize="none" pattern="[a-z0-9._\-]{3,30}" title="3-30 characters: a-z 0-9 . _ -"></div>
+            <div><label>Password (min 8)</label><input name="password" required minlength="8"></div>
+          </div>
+          <label>Role</label>
+          <select name="role"><option value="employee">HR user</option><option value="admin">Admin</option></select>
+          <div style="margin-top:16px"><button class="btn">Add user</button></div>
+          <div class="err"></div>
+        </form>
+      </div>
+      <div class="card"><h2>Users</h2><div id="users"></div></div>
+    </section>
+    <div class="credit">Designed &amp; developed by <b>GHAITH ALGHAITHI</b></div>
+  </main>
+</div>
+
+<div id="modal" class="modal hidden"><div class="sheet" id="sheet"></div></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+(() => {
+  const EMAIL_DOMAIN = "dutco-sls.local";
+  const RETENTION_DAYS = 30;
+  // Official verification portals (final confirmation is done here by the admin)
+  const PORTALS = {
+    DHA:   { name: "Dubai Health Authority (Sheryan verification)", url: "https://services.dha.gov.ae/sheryan/wps/portal/home/services-professional/online-verification" },
+    DOH:   { name: "DOH Abu Dhabi – Sick Leave Validation", url: "https://www.doh.gov.ae/en/resources/Lists-and-Tools" },
+    MOHAP: { name: "MOHAP – Medical leave attestation", url: "https://mohap.gov.ae/en/services/attestation-of-medical-leaves-and-reports" },
+  };
+  PORTALS.EHS = PORTALS.MOHAP; PORTALS.SHA = PORTALS.MOHAP; PORTALS.OTHER_UAE = PORTALS.MOHAP; PORTALS.UNKNOWN = PORTALS.MOHAP;
+
+  const cfg = window.FIREBASE_CONFIG || {};
+  if (!cfg.apiKey || /PASTE/.test(cfg.apiKey) || typeof firebase === "undefined") {
+    document.getElementById("v-loading").classList.add("hidden");
+    document.getElementById("v-pending").classList.remove("hidden");
+    return;
+  }
+  firebase.initializeApp(cfg);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+  const fns = firebase.app().functions(window.FUNCTIONS_REGION || "europe-west1");
+  const call = (name, data) => fns.httpsCallable(name, { timeout: 180000 })(data).then(r => r.data);
+
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  const show = (id) => ["v-loading","v-pending","v-setup","v-login","v-app"].forEach(v => $("#"+v).classList.toggle("hidden", v !== id));
+  const toast = (msg) => { const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.append(t); setTimeout(() => t.remove(), 3000); };
+  const errMsg = (e) => (e && (e.message || e.code)) ? String(e.message || e.code).replace(/^.*?\)\s*/, "") : "Something went wrong.";
+  const fmtDate = (s) => { if (!s) return "—"; const [y,m,d] = s.split("-"); return `${d}/${m}/${y}`; };
+  const fmtTs = (ts) => ts ? ts.toDate().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Dubai" }) : "—";
+  const LABEL = { GENUINE: "LIKELY GENUINE", REVIEW: "NEEDS REVIEW", FORGED: "FORGED" };
+
+  let me = null; let unsubLogs = null; let unsubUsers = null; let allLogs = []; let filter = "ALL";
+
+  // ---------- Boot ----------
+  auth.onAuthStateChanged(async (u) => {
+    if (unsubLogs) { unsubLogs(); unsubLogs = null; }
+    if (unsubUsers) { unsubUsers(); unsubUsers = null; }
+    if (!u) {
+      me = null;
+      const setup = await db.doc("config/setup").get().catch(() => null);
+      show(setup && setup.exists ? "v-login" : "v-setup");
+      return;
+    }
+    const token = await u.getIdTokenResult(true);
+    const prof = await db.doc("users/" + u.uid).get().catch(() => null);
+    const p = prof && prof.exists ? prof.data() : {};
+    if (p.active === false) { await auth.signOut(); return; }
+    me = { uid: u.uid, isAdmin: token.claims.role === "admin", fullName: p.fullName || u.displayName || "", username: p.username || "" };
+    $("#who").textContent = `${me.fullName || me.username}${me.isAdmin ? " · Admin" : ""}`;
+    $("#admin-tabs").classList.toggle("hidden", !me.isAdmin);
+    switchTab("upload");
+    resetUpload();
+    $("#result").innerHTML = "";
+    show("v-app");
+    if (me.isAdmin) { startLogs(); startUsers(); }
+  });
+
+  // ---------- Setup / login ----------
+  $("#f-setup").addEventListener("submit", async (e) => {
+    e.preventDefault(); const f = e.target; const err = $(".err", f); err.textContent = "";
+    const btn = $("button", f); btn.disabled = true;
+    try {
+      const data = { fullName: f.fullName.value, username: f.username.value.trim().toLowerCase(), password: f.password.value };
+      await call("setupAdmin", data);
+      await auth.signInWithEmailAndPassword(`${data.username}@${EMAIL_DOMAIN}`, data.password);
+    } catch (x) { err.textContent = errMsg(x); } finally { btn.disabled = false; }
+  });
+
+  $("#f-login").addEventListener("submit", async (e) => {
+    e.preventDefault(); const f = e.target; const err = $(".err", f); err.textContent = "";
+    const btn = $("button", f); btn.disabled = true;
+    try {
+      await auth.signInWithEmailAndPassword(`${f.username.value.trim().toLowerCase()}@${EMAIL_DOMAIN}`, f.password.value);
+      f.reset();
+    } catch (x) {
+      err.textContent = /user-disabled/.test(x.code) ? "This account is disabled." : "Wrong username or password.";
+    } finally { btn.disabled = false; }
+  });
+  $("#b-logout").onclick = () => auth.signOut();
+
+  // ---------- Tabs ----------
+  $$("#admin-tabs button").forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+  function switchTab(t) {
+    $$("#admin-tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
+    ["upload","logs","users"].forEach(x => $("#t-" + x).classList.toggle("hidden", x !== t));
+    window.scrollTo(0, 0);
+  }
+
+  // ---------- Check sick leave (one or many) ----------
+  const MAX_BATCH = 10;
+  const PARALLEL = 3;
+  let picked = []; // [{blob, type, ext, name, thumb, empName, empId}]
+  let busy = false;
+
+  $("#file").addEventListener("change", async (e) => {
+    const files = [...e.target.files]; e.target.value = "";
+    if (!files.length) return;
+    const errs = [];
+    for (const f of files) {
+      if (picked.length >= MAX_BATCH) { errs.push(`Only ${MAX_BATCH} certificates per batch.`); break; }
+      const base = { name: f.name, empName: "", empId: "" };
+      if (f.type === "application/pdf") {
+        if (f.size > 10 * 1024 * 1024) { errs.push(`${f.name}: PDF must be under 10 MB.`); continue; }
+        picked.push({ ...base, blob: f, type: "application/pdf", ext: "pdf", thumb: null });
+      } else if (f.type.startsWith("image/") || !f.type) {
+        if (f.size > 25 * 1024 * 1024) { errs.push(`${f.name}: file is too large.`); continue; }
+        try { const c = await compressImage(f); picked.push({ ...base, ...c, thumb: URL.createObjectURL(c.blob) }); }
+        catch { errs.push(`${f.name}: could not open this image. Try JPG or PNG.`); }
+      } else errs.push(`${f.name}: use a photo or PDF.`);
+    }
+    $("#up-err").textContent = [...new Set(errs)].join(" ");
+    renderThumbs();
+  });
+
+  function renderThumbs() {
+    const box = $("#thumbs");
+    box.classList.toggle("hidden", !picked.length);
+    box.innerHTML = picked.map((p, i) => `
+      <div class="item">
+        <div class="pic">${p.thumb ? `<img alt="" src="${p.thumb}">` : "PDF"}<span class="n">${i + 1}</span></div>
+        <div class="f">
+          <input data-i="${i}" data-k="empName" placeholder="Employee name (optional)" value="${esc(p.empName)}" ${busy ? "disabled" : ""} autocomplete="off">
+          <input data-i="${i}" data-k="empId" placeholder="Emirates ID (optional)" value="${esc(p.empId)}" ${busy ? "disabled" : ""} autocomplete="off">
+        </div>
+        ${busy ? "" : `<button class="x" data-i="${i}" aria-label="Remove">×</button>`}
+      </div>`).join("")
+      + (picked.length && picked.length < MAX_BATCH && !busy ? `<label class="addmore" for="file">+ Add more certificates</label>` : "");
+    $$("input[data-k]", box).forEach(inp => inp.oninput = () => { picked[+inp.dataset.i][inp.dataset.k] = inp.value; });
+    $$(".item .x", box).forEach(b => b.onclick = () => { const p = picked.splice(+b.dataset.i, 1)[0]; if (p?.thumb) URL.revokeObjectURL(p.thumb); renderThumbs(); });
+    const n = picked.length;
+    $("#b-check").disabled = !n || busy;
+    if (!busy) $("#b-check").textContent = n > 1 ? `Verify ${n} sick leaves` : "Verify sick leave";
+    $("#drop").classList.toggle("hidden", n > 0);
+  }
+
+  async function compressImage(file) {
+    const url = URL.createObjectURL(file);
+    const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+    const max = 2200; let { width: w, height: h } = img;
+    const k = Math.min(1, max / Math.max(w, h)); w = Math.round(w * k); h = Math.round(h * k);
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    c.getContext("2d").drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(url);
+    const blob = await new Promise(r => c.toBlob(r, "image/jpeg", 0.9));
+    return { blob, type: "image/jpeg", ext: "jpg" };
+  }
+
+  function resetUpload() {
+    picked.forEach(p => p.thumb && URL.revokeObjectURL(p.thumb));
+    picked = []; busy = false; $("#file").value = "";
+    $("#prog").classList.add("hidden"); $("#up-err").textContent = "";
+    renderThumbs();
+  }
+  const setProg = (pct, text) => { $("#prog").classList.remove("hidden"); $("#bar").style.width = pct + "%"; $("#step").textContent = text; };
+
+  async function checkOne(p, idx) {
+    const path = `uploads/${me.uid}/${Date.now()}-${idx}.${p.ext}`;
+    await storage.ref(path).put(p.blob, { contentType: p.type });
+    return call("analyzeLeave", { path, employeeName: p.empName.trim(), employeeId: p.empId.trim() });
+  }
+
+  $("#b-check").onclick = async () => {
+    if (!picked.length || busy) return;
+    busy = true;
+    const btn = $("#b-check"); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Verifying…';
+    $("#up-err").textContent = ""; renderThumbs();
+    const items = picked.slice(); const total = items.length;
+    const results = new Array(total); let done = 0; let next = 0; let stop = false;
+    const label = () => total > 1 ? `Checked ${done} of ${total} — reading certificates and checking dates, authority and signs of editing…` : "Reading certificate and checking dates, authority and signs of editing…";
+    setProg(8, label());
+    const worker = async () => {
+      while (next < total) {
+        const i = next++;
+        const meta = { name: items[i].name, empName: items[i].empName.trim() };
+        if (stop) { results[i] = { ...meta, verdict: "ERROR", error: "Not checked: daily limit reached." }; continue; }
+        try { results[i] = { ...meta, ...(await checkOne(items[i], i)) }; }
+        catch (x) {
+          results[i] = { ...meta, verdict: "ERROR", error: errMsg(x) };
+          if (/resource-exhausted|limit/i.test(String(x.code || x.message))) stop = true;
+        }
+        done++; setProg(8 + 92 * done / total, label());
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(PARALLEL, total) }, worker));
+    renderResults(results);
+    resetUpload();
+    btn.textContent = "Verify sick leave";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const MSG = {
+    GENUINE: "All automated checks passed. Confirm the reference on the official portal before final approval.",
+    REVIEW: "Some details need a closer look. See the reasons below.",
+    FORGED: "This certificate failed verification. Do not accept it without confirming on the official portal.",
+  };
+  const BAR_BG = { GENUINE: "var(--green)", REVIEW: "var(--amber)", FORGED: "var(--red)" };
+
+  function resultBody(r) {
+    const portal = PORTALS[r.authority] || PORTALS.MOHAP;
+    const reasons = (r.flags || []).map(f => `<div class="flag ${f.level}">${esc(f.message)}</div>`).join("");
+    return `<dl class="kv">
+        <dt>Patient</dt><dd>${esc(r.patientName || "—")}</dd>
+        <dt>Authority</dt><dd>${esc(r.authority || "—")}</dd>
+        <dt>Reference</dt><dd>${esc(r.reference || "—")}</dd>
+        <dt>Leave</dt><dd>${fmtDate(r.start)} → ${fmtDate(r.end)}${r.statedDays ? ` (${r.statedDays} day${r.statedDays > 1 ? "s" : ""})` : ""}</dd>
+        <dt>Facility</dt><dd>${esc(r.facility || "—")}</dd>
+      </dl>
+      ${reasons ? `<div class="reasons">${reasons}</div>` : ""}
+      <div class="row" style="margin-top:12px">
+        <button class="btn ghost sm" data-copy="${esc(r.reference || "")}" ${r.reference ? "" : "disabled"}>Copy reference</button>
+        <a class="btn sm" style="text-decoration:none" href="${portal.url}" target="_blank" rel="noopener noreferrer">Open ${esc(r.authority && r.authority !== "UNKNOWN" ? r.authority : "MOHAP")} portal</a>
+      </div>`;
+  }
+
+  function renderResults(list) {
+    const count = (v) => list.filter(r => r.verdict === v).length;
+    const fail = count("ERROR");
+    const who = (r) => r.empName || r.patientName || r.name;
+    let html;
+    if (list.length === 1 && list[0].verdict !== "ERROR") {
+      const r = list[0];
+      html = `<div class="verdict v-${r.verdict}"><div class="big">${LABEL[r.verdict]}</div><p>${MSG[r.verdict]}</p></div>
+        <div class="card">${resultBody(r)}</div>`;
+    } else {
+      html = `
+      <div class="card" style="padding:14px">
+        <h2 style="margin-bottom:10px">${list.length} sick leave${list.length > 1 ? "s" : ""} checked${fail ? ` · ${fail} not checked` : ""}</h2>
+        <div class="summary">
+          <div class="g"><b>${count("GENUINE")}</b>GENUINE</div>
+          <div class="a"><b>${count("REVIEW")}</b>REVIEW</div>
+          <div class="r"><b>${count("FORGED")}</b>FORGED</div>
+        </div>
+      </div>
+      ${list.map((r, i) => r.verdict === "ERROR" ? `
+        <div class="res ERROR"><div class="bar"><span>NOT CHECKED</span><small>#${i + 1} · ${esc(who(r))}</small></div>
+          <div class="body" style="color:var(--muted)">${esc(r.error)}</div></div>` : `
+        <div class="res"><div class="bar" style="background:${BAR_BG[r.verdict]}"><span>${LABEL[r.verdict]}</span><small>#${i + 1} · ${esc(who(r))}</small></div>
+          <div class="body">${resultBody(r)}</div></div>`).join("")}`;
+    }
+    $("#result").innerHTML = html;
+    $$("#result [data-copy]").forEach(b => b.onclick = () => navigator.clipboard.writeText(b.dataset.copy).then(() => toast("Reference copied")));
+  }
+
+  // ---------- Admin: records ----------
+  function startLogs() {
+    unsubLogs = db.collection("checks").orderBy("createdAt", "desc").limit(500).onSnapshot(s => {
+      allLogs = s.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderLogs();
+      const open = $("#sheet").dataset.id;
+      if (open && !$("#modal").classList.contains("hidden")) { const c = allLogs.find(x => x.id === open); if (c) renderDetail(c, true); }
+    }, e => { $("#logs").innerHTML = `<div class="empty">Could not load records: ${esc(errMsg(e))}</div>`; });
+  }
+  $("#q").addEventListener("input", renderLogs);
+
+  function renderLogs() {
+    const n = (v) => allLogs.filter(c => c.verdict === v).length;
+    $("#stats").innerHTML = [
+      ["ALL","", "All", allLogs.length], ["FORGED","r","Forged", n("FORGED")], ["REVIEW","a","Review", n("REVIEW")], ["GENUINE","g","Genuine", n("GENUINE")]
+    ].map(([k,c,l,v]) => `<div class="stat ${c} ${filter===k?"on":""}" data-f="${k}"><b>${v}</b><span>${l}</span></div>`).join("");
+    $$("#stats .stat").forEach(el => el.onclick = () => { filter = el.dataset.f; renderLogs(); });
+
+    const q = $("#q").value.trim().toLowerCase();
+    const list = allLogs.filter(c => (filter === "ALL" || c.verdict === filter) &&
+      (!q || [c.subjectName, c.subjectId, c.fullName, c.username, c.extracted?.reference, c.extracted?.patientName, c.extracted?.patientNameEn, c.extracted?.facility].join(" ").toLowerCase().includes(q)));
+    $("#logs").innerHTML = list.length ? list.map(c => {
+      const daysLeft = c.expiresAt ? Math.max(0, Math.ceil((c.expiresAt.toMillis() - Date.now()) / 86400000)) : RETENTION_DAYS;
+      const dec = c.adminDecision ? `<span class="pill dec">${c.adminDecision === "confirmed_genuine" ? "HR: GENUINE" : "HR: FORGED"}</span>` : "";
+      return `<div class="log ${c.verdict}" data-id="${c.id}">
+        <div class="main">
+          <div class="name">${esc(c.subjectName || "Unknown employee")}</div>
+          <div class="meta">Checked by @${esc(c.username)}</div>
+          <div class="meta">${fmtTs(c.createdAt)} · ${esc(c.extracted?.authority || "?")} · ${fmtDate(c.extracted?.start)} → ${fmtDate(c.extracted?.end)}</div>
+          <div class="meta">Deleted in ${daysLeft} day(s)</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><span class="pill ${c.verdict}">${LABEL[c.verdict]}</span>${dec}</div>
+      </div>`;
+    }).join("") : `<div class="empty">No records.</div>`;
+    $$("#logs .log").forEach(el => el.onclick = () => { const c = allLogs.find(x => x.id === el.dataset.id); if (c) renderDetail(c); });
+  }
+
+  async function renderDetail(c, refresh) {
+    const x = c.extracted || {};
+    const portal = PORTALS[x.authority] || PORTALS.MOHAP;
+    const flags = (c.flags || []).map(f => `<div class="flag ${f.level}">${esc(f.message)}</div>`).join("") || `<div class="flag" style="background:var(--green-bg);color:#0b5d36">No issues found by automated checks.</div>`;
+    const yn = (b) => b ? "Yes" : "No";
+    const sheet = $("#sheet"); sheet.dataset.id = c.id;
+    const imgHtml = refresh ? ($(".imgbox", sheet)?.outerHTML || "") : `<div class="imgbox"><div class="empty">Loading image…</div></div>`;
+    sheet.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <b>${esc(c.subjectName || "Unknown employee")}</b><button class="btn ghost sm" id="m-close">Close</button>
+      </div>
+      <div class="verdict v-${c.verdict}" style="padding:14px"><div class="big" style="font-size:22px">${LABEL[c.verdict]}</div>
+        <p>${esc(x.summary || "")}</p></div>
+      ${imgHtml}
+      <div class="card"><h2>Findings</h2>${flags}</div>
+      <div class="card"><h2>Certificate details</h2><dl class="kv">
+        <dt>Authority</dt><dd>${esc(x.authority)} ${x.emirate ? "· " + esc(x.emirate) : ""}</dd>
+        <dt>Reference</dt><dd>${esc(x.reference || "—")}</dd>
+        <dt>Patient</dt><dd>${esc(x.patientName || "—")}${x.patientNameEn && x.patientNameEn !== x.patientName ? " / " + esc(x.patientNameEn) : ""}</dd>
+        <dt>Patient ID</dt><dd>${esc(x.patientId || "—")}</dd>
+        <dt>Facility</dt><dd>${esc(x.facility || "—")}</dd>
+        <dt>Doctor</dt><dd>${esc(x.doctor || "—")}</dd>
+        <dt>Issued</dt><dd>${fmtDate(x.issueDate)}</dd>
+        <dt>Leave</dt><dd>${fmtDate(x.start)} → ${fmtDate(x.end)} ${x.statedDays ? `(${x.statedDays} day(s) stated)` : ""}</dd>
+        <dt>QR / Seal / Sign</dt><dd>${yn(x.hasQr)} / ${yn(x.hasSeal)} / ${yn(x.hasSignature)}</dd>
+      </dl></div>
+      <div class="card"><h2>Submission</h2><dl class="kv">
+        <dt>Employee</dt><dd>${esc(c.subjectName || "—")}${c.subjectId ? " · " + esc(c.subjectId) : ""}${c.subjectEntered ? "" : " <span class=\"meta\">(name read from certificate)</span>"}</dd>
+        <dt>Checked by</dt><dd>${esc(c.fullName)} (@${esc(c.username)})</dd>
+        <dt>Checked at</dt><dd>${fmtTs(c.createdAt)}</dd>
+        <dt>Auto-delete</dt><dd>${fmtTs(c.expiresAt)}</dd>
+      </dl></div>
+      <div class="card"><h2>Confirm with official portal</h2>
+        <p class="sub" style="margin-bottom:10px">${esc(portal.name)}</p>
+        <div class="row">
+          <button class="btn ghost" id="m-copy" ${x.reference ? "" : "disabled"}>Copy reference</button>
+          <a class="btn" href="${portal.url}" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Open portal</a>
+        </div>
+      </div>
+      <div class="card"><h2>HR decision</h2>
+        <textarea id="m-note" rows="2" placeholder="Note (optional)">${esc(c.adminNote || "")}</textarea>
+        <div class="row" style="margin-top:10px">
+          <button class="btn" style="background:var(--green)" data-dec="confirmed_genuine">Confirmed genuine</button>
+          <button class="btn danger" data-dec="confirmed_forged">Confirmed forged</button>
+        </div>
+        ${c.adminDecision ? `<p class="note">Current: <b>${c.adminDecision === "confirmed_genuine" ? "Confirmed genuine" : "Confirmed forged"}</b> · ${fmtTs(c.adminDecisionAt)}</p>` : ""}
+      </div>`;
+    $("#modal").classList.remove("hidden");
+    $("#m-close").onclick = closeModal;
+    $("#m-copy").onclick = () => navigator.clipboard.writeText(x.reference).then(() => toast("Reference copied"));
+    $$("[data-dec]", sheet).forEach(b => b.onclick = async () => {
+      b.disabled = true;
+      try {
+        await db.doc("checks/" + c.id).update({ adminDecision: b.dataset.dec, adminDecisionAt: firebase.firestore.FieldValue.serverTimestamp(), adminNote: $("#m-note").value.slice(0, 500) });
+        toast("Decision saved");
+      } catch (e) { toast(errMsg(e)); } finally { b.disabled = false; }
+    });
+    if (!refresh) {
+      try {
+        const url = await storage.ref(c.filePath).getDownloadURL();
+        const box = $(".imgbox", sheet);
+        if (box && sheet.dataset.id === c.id) box.innerHTML = c.contentType === "application/pdf"
+          ? `<a class="btn ghost" style="text-decoration:none;border-radius:0" href="${url}" target="_blank" rel="noopener">Open PDF certificate</a>`
+          : `<a href="${url}" target="_blank" rel="noopener"><img alt="Sick leave certificate" src="${url}"></a>`;
+      } catch { const box = $(".imgbox", sheet); if (box) box.innerHTML = `<div class="empty">Image no longer available.</div>`; }
+    }
+  }
+  function closeModal() { $("#modal").classList.add("hidden"); $("#sheet").dataset.id = ""; }
+  $("#modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
+
+  // ---------- Admin: users ----------
+  function startUsers() {
+    unsubUsers = db.collection("users").orderBy("fullName").onSnapshot(s => {
+      const users = s.docs.map(d => ({ uid: d.id, ...d.data() }));
+      $("#users").innerHTML = users.length ? users.map(u => `
+        <div class="user" data-uid="${u.uid}">
+          <div class="avatar">${esc((u.fullName || u.username || "?").trim().charAt(0).toUpperCase())}</div>
+          <div class="main">
+            <div class="name">${esc(u.fullName)} ${u.role === "admin" ? '<span class="pill dec">ADMIN</span>' : '<span class="pill dec" style="background:#eef2f7;color:#475569">HR</span>'} ${u.active === false ? '<span class="pill FORGED">DISABLED</span>' : ""}</div>
+            <div class="meta">@${esc(u.username)}${u.employeeId ? " · " + esc(u.employeeId) : ""}</div>
+          </div>
+          <select class="act" style="width:auto;padding:8px">
+            <option value="">Actions</option>
+            <option value="pw">Reset password</option>
+            <option value="toggle">${u.active === false ? "Enable" : "Disable"}</option>
+            <option value="role">${u.role === "admin" ? "Make HR user" : "Make admin"}</option>
+            <option value="del">Delete</option>
+          </select>
+        </div>`).join("") : `<div class="empty">No users yet.</div>`;
+      $$("#users .user").forEach(row => {
+        const u = users.find(x => x.uid === row.dataset.uid);
+        $(".act", row).onchange = async (e) => {
+          const a = e.target.value; e.target.value = ""; if (!a) return;
+          try {
+            if (a === "pw") {
+              const pw = prompt(`New password for @${u.username} (min 8 characters):`);
+              if (!pw) return; await call("updateUser", { uid: u.uid, password: pw }); toast("Password updated");
+            } else if (a === "toggle") {
+              await call("updateUser", { uid: u.uid, active: u.active === false }); toast(u.active === false ? "User enabled" : "User disabled");
+            } else if (a === "role") {
+              await call("updateUser", { uid: u.uid, role: u.role === "admin" ? "employee" : "admin" }); toast("Role updated");
+            } else if (a === "del") {
+              if (!confirm(`Delete @${u.username}? This cannot be undone. Their records stay until the 30-day deletion.`)) return;
+              await call("deleteUser", { uid: u.uid }); toast("User deleted");
+            }
+          } catch (x) { toast(errMsg(x)); }
+        };
+      });
+    });
+  }
+
+  $("#f-user").addEventListener("submit", async (e) => {
+    e.preventDefault(); const f = e.target; const err = $(".err", f); err.textContent = "";
+    const btn = $("button", f); btn.disabled = true;
+    try {
+      await call("createUser", {
+        fullName: f.fullName.value, employeeId: f.employeeId.value,
+        username: f.username.value.trim().toLowerCase(), password: f.password.value, role: f.role.value,
+      });
+      toast(`User @${f.username.value.trim().toLowerCase()} added`); f.reset();
+    } catch (x) { err.textContent = errMsg(x); } finally { btn.disabled = false; }
+  });
+})();
+</script>
+</body>
+</html>

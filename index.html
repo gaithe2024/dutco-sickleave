@@ -2,247 +2,432 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <meta name="theme-color" content="#0b2545">
 <meta name="robots" content="noindex, nofollow">
 <title>DUTCO SICKLEAVE SYSTEM</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%231d6fd8%27/%3E%3Cstop offset=%271%27 stop-color=%27%2322b8cf%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2764%27 height=%2764%27 rx=%2716%27 fill=%27url(%23g)%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-family=%27Arial,sans-serif%27 font-weight=%27800%27 font-size=%2726%27 fill=%27white%27 text-anchor=%27middle%27%3EDS%3C/text%3E%3C/svg%3E">
 <meta name="description" content="DUTCO SICKLEAVE SYSTEM - sick leave verification for DUTCO HR. Designed & developed by GHAITH ALGHAITHI.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="DUTCO SLS">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --navy:#0b2545; --navy-2:#13315c; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0;
-    --bg:#f4f6fa; --card:#ffffff; --accent:#1d6fd8;
+    --navy:#0b2545; --navy-2:#13315c; --ink:#0f172a; --ink-2:#334155; --muted:#64748b; --line:#e5e9f0;
+    --bg:#f3f5f9; --card:#ffffff; --accent:#1d6fd8; --accent-2:#22b8cf; --accent-soft:#e8f1fd;
     --green:#0f9d58; --green-bg:#e7f6ee; --amber:#c77700; --amber-bg:#fff4e0; --red:#d32f2f; --red-bg:#fdecec;
-    --radius:14px; --shadow:0 1px 2px rgba(15,23,42,.06),0 4px 16px rgba(15,23,42,.06);
+    --radius:16px; --shadow:0 1px 2px rgba(15,23,42,.05),0 6px 24px rgba(15,23,42,.06);
+    --top:calc(56px + env(safe-area-inset-top)); --bottom:calc(64px + env(safe-area-inset-bottom));
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-  button,input,select,textarea{font:inherit}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  button,input,select,textarea{font:inherit;color:inherit}
   .hidden{display:none!important}
-  header.top{position:sticky;top:0;z-index:10;background:var(--navy);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;gap:10px}
-  .brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
-  .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#1d6fd8,#22b8cf);display:grid;place-items:center;font-weight:800;font-size:13px;flex:none;color:#fff}
-  .brand b{font-size:13px;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .brand small{display:block;opacity:.7;font-size:11px;font-weight:500;letter-spacing:0}
-  .iconbtn{background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:10px;padding:8px 12px;font-weight:600;font-size:13px;cursor:pointer}
-  main{max-width:860px;margin:0 auto;padding:16px 16px 90px}
-  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
-  h1{font-size:22px;margin:0 0 4px} h2{font-size:17px;margin:0 0 12px} p.sub{color:var(--muted);margin:0 0 16px}
-  label{display:block;font-size:13px;font-weight:600;color:#334155;margin:12px 0 6px}
-  input,select,textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);outline:none}
-  input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,111,216,.15)}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:11px;padding:13px 16px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff;width:100%}
-  .btn:disabled{opacity:.55;cursor:default}
-  .btn.ghost{background:#eef2f7;color:var(--ink)} .btn.danger{background:var(--red)} .btn.sm{width:auto;padding:8px 12px;font-size:13px;border-radius:9px}
-  .row{display:flex;gap:8px;flex-wrap:wrap} .row>*{flex:1}
-  .err{color:var(--red);font-size:13px;margin-top:10px;min-height:1em}
-  .center-wrap{min-height:100vh;display:grid;place-items:center;padding:20px}
-  .auth{width:100%;max-width:400px}
-  .auth .logo{width:52px;height:52px;font-size:18px;border-radius:14px;margin-bottom:14px}
+  svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 
-  /* Upload */
-  .drop{border:2px dashed #c7d2e0;border-radius:var(--radius);padding:26px 16px;text-align:center;background:#fafcff;cursor:pointer}
-  .drop svg{width:44px;height:44px;color:var(--accent)}
-  .drop b{display:block;margin-top:8px} .drop span{color:var(--muted);font-size:13px}
-  .preview{margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid var(--line);max-height:320px;display:grid;place-items:center;background:#f8fafc}
-  .preview img{max-width:100%;max-height:320px;display:block}
-  .preview .pdf{padding:24px;color:var(--muted);font-weight:600}
-  .items{margin-top:12px;display:flex;flex-direction:column;gap:8px}
-  .item{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px;background:#fbfcfe}
-  .item .pic{width:56px;height:72px;border-radius:8px;overflow:hidden;flex:none;background:#eef2f7;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--muted);position:relative}
+  /* ---------- Common ---------- */
+  .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;font-weight:800;font-size:13px;color:#fff;flex:none;letter-spacing:.02em}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
+  h1{font-size:24px;margin:0 0 6px;letter-spacing:-.01em} h2{font-size:17px;margin:0 0 12px} h3{font-size:15px;margin:0 0 10px}
+  p.sub{color:var(--muted);margin:0 0 16px}
+  label.f{display:block;font-size:13px;font-weight:600;color:var(--ink-2);margin:14px 0 6px}
+  input,select,textarea{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;outline:none;font-size:16px}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(29,111,216,.12)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:14px 18px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff;width:100%;font-size:15px;transition:transform .08s,opacity .2s;text-decoration:none}
+  .btn:active{transform:scale(.98)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .btn.ghost{background:#eef2f7;color:var(--ink)} .btn.danger{background:var(--red)} .btn.ok{background:var(--green)}
+  .btn.sm{width:auto;padding:9px 13px;font-size:13px;border-radius:10px}
+  .row{display:flex;gap:10px;flex-wrap:wrap} .row>*{flex:1;min-width:0}
+  .err{color:var(--red);font-size:13px;margin-top:10px;min-height:1em}
+  .note{font-size:12px;color:var(--muted);margin-top:10px}
+  .credit{text-align:center;font-size:12px;color:var(--muted);margin-top:22px;letter-spacing:.02em}
+  .credit b{color:var(--navy-2);letter-spacing:.06em}
+  .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .toast{position:fixed;left:50%;bottom:calc(var(--bottom) + 14px);transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;z-index:99;max-width:90vw;box-shadow:0 10px 30px rgba(0,0,0,.2);animation:up .2s ease-out}
+  @keyframes up{from{opacity:0;transform:translate(-50%,8px)}}
+  .empty{text-align:center;color:var(--muted);padding:36px 10px}
+
+  /* ---------- Auth screens ---------- */
+  .auth-wrap{min-height:100vh;min-height:100dvh;display:flex;background:var(--bg)}
+  .auth-brand{display:none}
+  .auth-main{flex:1;display:flex;flex-direction:column;justify-content:center;padding:calc(28px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom))}
+  .auth-box{width:100%;max-width:400px;margin:0 auto}
+  .auth-box .logo{width:60px;height:60px;font-size:20px;border-radius:18px;margin-bottom:22px;box-shadow:0 10px 30px rgba(29,111,216,.3)}
+  .auth-box h1{font-size:26px}
+  .auth-box .btn{margin-top:22px;padding:15px}
+  .center{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:20px}
+
+  /* ---------- App shell (mobile first) ---------- */
+  .topbar{position:fixed;inset:0 0 auto 0;height:var(--top);padding-top:env(safe-area-inset-top);background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding-left:16px;padding-right:12px;z-index:20}
+  .topbar .title{flex:1;min-width:0}
+  .topbar .title b{display:block;font-size:15px;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topbar .title small{display:block;font-size:11px;color:var(--muted);font-weight:500}
+  .avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#dbe6f5,#c8daf3);color:var(--navy-2);display:grid;place-items:center;font-weight:800;flex:none;font-size:14px;border:0;cursor:pointer}
+  main{padding:calc(var(--top) + 16px) 16px calc(var(--bottom) + 20px);max-width:720px;margin:0 auto}
+  .page-head{margin:4px 2px 16px}
+  .page-head h1{font-size:24px;margin:0}
+  .page-head p{margin:4px 0 0;color:var(--muted);font-size:14px}
+
+  .bottomnav{position:fixed;inset:auto 0 0 0;height:var(--bottom);padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.96);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-top:1px solid var(--line);display:flex;z-index:20}
+  .bottomnav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#94a3b8;font-size:11px;font-weight:600;cursor:pointer;padding:6px 0}
+  .bottomnav button.on{color:var(--accent)}
+  .bottomnav button svg.i{width:25px;height:25px}
+  .bottomnav button.on svg.i{stroke-width:2.3}
+  .sidebar{display:none}
+
+  /* ---------- Check page ---------- */
+  .hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+  .action{border:0;border-radius:18px;padding:20px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:12px;cursor:pointer;text-align:left;box-shadow:var(--shadow);transition:transform .08s}
+  .action:active{transform:scale(.97)}
+  .action .ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center}
+  .action b{font-size:15px;display:block} .action span{font-size:12px;opacity:.8}
+  .action.primary{background:linear-gradient(135deg,var(--accent),#2b86f0);color:#fff}
+  .action.primary .ic{background:rgba(255,255,255,.2)}
+  .action.secondary{background:#fff;color:var(--ink)}
+  .action.secondary .ic{background:var(--accent-soft);color:var(--accent)}
+  .accepted{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 16px}
+  .chip{font-size:11px;font-weight:700;background:#fff;border:1px solid var(--line);color:var(--ink-2);padding:5px 10px;border-radius:999px;letter-spacing:.02em}
+
+  .items{display:flex;flex-direction:column;gap:10px}
+  .item{display:flex;gap:12px;align-items:center;border-radius:14px;padding:10px;background:#fff;box-shadow:var(--shadow)}
+  .item .pic{width:58px;height:76px;border-radius:10px;overflow:hidden;flex:none;background:#eef2f7;display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--muted);position:relative}
   .item .pic img{width:100%;height:100%;object-fit:cover}
-  .item .pic .n{position:absolute;left:3px;bottom:3px;background:rgba(15,23,42,.75);color:#fff;font-size:10px;font-weight:700;border-radius:5px;padding:0 5px}
-  .item .f{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
-  .item input{padding:9px 10px;font-size:14px;border-radius:8px}
-  .item .x{width:30px;height:30px;border-radius:50%;border:0;background:#e2e8f0;color:#334155;font-weight:800;cursor:pointer;flex:none}
-  .addmore{border:1.5px dashed #c7d2e0;border-radius:12px;padding:11px;text-align:center;color:var(--accent);font-weight:700;cursor:pointer;background:#fff}
-  .reasons{margin-top:10px}
-  .reasons .flag{font-size:13px;padding:8px 10px}
-  .thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin-top:12px}
-  .thumb{position:relative;aspect-ratio:3/4;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#f8fafc;display:grid;place-items:center}
-  .thumb img{width:100%;height:100%;object-fit:cover}
-  .thumb .pdf{font-size:12px;font-weight:700;color:var(--muted);padding:6px;text-align:center;word-break:break-all}
-  .thumb .x{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(15,23,42,.75);color:#fff;font-weight:700;cursor:pointer;line-height:24px;padding:0}
-  .thumb .n{position:absolute;left:4px;bottom:4px;background:rgba(15,23,42,.75);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:1px 6px}
-  .thumb.add{border-style:dashed;color:var(--accent);font-weight:800;font-size:26px;cursor:pointer}
-  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-  .summary div{border-radius:12px;padding:10px;text-align:center;font-size:12px;font-weight:700;letter-spacing:.03em}
-  .summary b{display:block;font-size:22px}
-  .summary .g{background:var(--green-bg);color:var(--green)} .summary .a{background:var(--amber-bg);color:var(--amber)} .summary .r{background:var(--red-bg);color:var(--red)}
-  .res{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:10px}
-  .res .bar{padding:10px 14px;color:#fff;font-weight:800;display:flex;justify-content:space-between;align-items:center;gap:8px}
-  .res .bar small{font-weight:600;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .res .body{padding:12px 14px}
-  .res.ERROR .bar{background:#64748b}
+  .item .pic .n{position:absolute;left:4px;bottom:4px;background:rgba(15,23,42,.8);color:#fff;font-size:10px;font-weight:700;border-radius:6px;padding:1px 6px}
+  .item .f{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
+  .item input{padding:10px 12px;font-size:16px;border-radius:10px;background:#f8fafc}
+  .item .x{width:32px;height:32px;border-radius:50%;border:0;background:#f1f5f9;color:#475569;font-weight:800;cursor:pointer;flex:none;font-size:16px}
+  .addmore{border:1.5px dashed #c7d2e0;border-radius:14px;padding:13px;text-align:center;color:var(--accent);font-weight:700;cursor:pointer;background:transparent;width:100%}
+  .sticky-cta{position:sticky;bottom:calc(var(--bottom) + 10px);margin-top:14px;z-index:5}
+  .sticky-cta .btn{box-shadow:0 10px 30px rgba(29,111,216,.35);padding:16px}
   .progress{height:6px;border-radius:6px;background:#e5eaf2;overflow:hidden;margin-top:14px}
-  .progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+  .progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .3s}
   .steps{font-size:13px;color:var(--muted);margin-top:8px}
 
-  /* Verdict */
-  .verdict{border-radius:var(--radius);padding:22px 18px;text-align:center;color:#fff;margin-bottom:14px}
+  /* ---------- Results ---------- */
+  .verdict{border-radius:var(--radius);padding:24px 18px;text-align:center;color:#fff;margin-bottom:14px;box-shadow:var(--shadow)}
   .verdict .big{font-size:26px;font-weight:800;letter-spacing:.02em}
   .verdict p{margin:6px 0 0;opacity:.95}
   .v-GENUINE{background:linear-gradient(135deg,#0f9d58,#12b76a)}
   .v-REVIEW{background:linear-gradient(135deg,#c77700,#f59e0b)}
   .v-FORGED{background:linear-gradient(135deg,#b71c1c,#e53935);animation:pulse 1.4s ease-in-out 2}
   @keyframes pulse{50%{transform:scale(1.02)}}
-  dl.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;margin:0;font-size:14px}
+  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .summary div{border-radius:12px;padding:12px 6px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.04em}
+  .summary b{display:block;font-size:24px}
+  .summary .g{background:var(--green-bg);color:var(--green)} .summary .a{background:var(--amber-bg);color:var(--amber)} .summary .r{background:var(--red-bg);color:var(--red)}
+  .res{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px}
+  .res .bar{padding:11px 14px;color:#fff;font-weight:800;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px}
+  .res .bar small{font-weight:600;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .res .body{padding:14px}
+  .res.ERROR .bar{background:#64748b}
+  dl.kv{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;margin:0;font-size:14px}
   dl.kv dt{color:var(--muted)} dl.kv dd{margin:0;font-weight:600;word-break:break-word}
+  .reasons{margin-top:12px}
+  .flag{padding:10px 12px;border-radius:10px;margin-bottom:6px;font-size:13.5px}
+  .flag.red{background:var(--red-bg);color:#8e1b1b;border-left:4px solid var(--red)}
+  .flag.amber{background:var(--amber-bg);color:#7a4a00;border-left:4px solid var(--amber)}
 
-  /* Admin */
-  .tabs{display:flex;gap:6px;background:#e7ecf3;padding:4px;border-radius:12px;margin-bottom:14px}
-  .tabs button{flex:1;border:0;background:transparent;padding:10px;border-radius:9px;font-weight:700;color:#475569;cursor:pointer}
-  .tabs button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
-  .stat{background:#fff;border-radius:12px;padding:10px;text-align:center;box-shadow:var(--shadow);cursor:pointer;border:2px solid transparent}
-  .stat.on{border-color:var(--accent)}
-  .stat b{display:block;font-size:20px} .stat span{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  /* ---------- Records ---------- */
+  .stats{display:flex;gap:8px;overflow-x:auto;margin:0 -16px 12px;padding:2px 16px 4px;scrollbar-width:none}
+  .stats::-webkit-scrollbar{display:none}
+  .stat{flex:none;background:#fff;border-radius:999px;padding:9px 14px;box-shadow:var(--shadow);cursor:pointer;border:2px solid transparent;display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;white-space:nowrap}
+  .stat b{font-size:15px}
+  .stat.on{border-color:var(--accent);background:var(--accent-soft)}
   .stat.g b{color:var(--green)} .stat.a b{color:var(--amber)} .stat.r b{color:var(--red)}
-  .log{display:flex;gap:12px;align-items:center;background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:var(--shadow);cursor:pointer;border-left:5px solid var(--line)}
-  .log.GENUINE{border-left-color:var(--green)} .log.REVIEW{border-left-color:var(--amber)} .log.FORGED{border-left-color:var(--red);background:var(--red-bg)}
+  .search{position:relative;margin-bottom:12px}
+  .search svg.i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#94a3b8;width:19px;height:19px}
+  .search input{padding-left:40px;border-radius:14px;background:#fff;box-shadow:var(--shadow);border-color:transparent}
+  .log{display:flex;gap:12px;align-items:center;background:#fff;border-radius:14px;padding:13px;margin-bottom:9px;box-shadow:var(--shadow);cursor:pointer;border-left:5px solid var(--line);transition:transform .08s}
+  .log:active{transform:scale(.99)}
+  .log.GENUINE{border-left-color:var(--green)} .log.REVIEW{border-left-color:var(--amber)} .log.FORGED{border-left-color:var(--red);background:#fff7f7}
   .log .main{flex:1;min-width:0}
   .log .name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .log .meta{font-size:12px;color:var(--muted)}
-  .pill{display:inline-block;font-size:11px;font-weight:800;padding:4px 8px;border-radius:999px;letter-spacing:.04em;white-space:nowrap}
+  .pill{display:inline-block;font-size:10.5px;font-weight:800;padding:4px 8px;border-radius:999px;letter-spacing:.04em;white-space:nowrap}
   .pill.GENUINE{background:var(--green-bg);color:var(--green)} .pill.REVIEW{background:var(--amber-bg);color:var(--amber)} .pill.FORGED{background:var(--red);color:#fff}
-  .pill.dec{background:#e8eefc;color:#1e40af}
-  .flag{padding:10px 12px;border-radius:10px;margin-bottom:6px;font-size:14px}
-  .flag.red{background:var(--red-bg);color:#8e1b1b;border-left:4px solid var(--red)}
-  .flag.amber{background:var(--amber-bg);color:#7a4a00;border-left:4px solid var(--amber)}
-  .user{display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
-  .user:last-child{border-bottom:0}
-  .avatar{width:38px;height:38px;border-radius:50%;background:#dbe6f5;color:var(--navy-2);display:grid;place-items:center;font-weight:800;flex:none}
-  .user .main{flex:1;min-width:0} .user .name{font-weight:700} .user .meta{font-size:12px;color:var(--muted)}
-  .empty{text-align:center;color:var(--muted);padding:30px 10px}
+  .pill.dec{background:#e8eefc;color:#1e40af} .pill.hr{background:#eef2f7;color:#475569}
 
-  /* Modal */
-  .modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center}
-  .sheet{background:var(--bg);width:100%;max-width:720px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom))}
-  @media(min-width:760px){.modal{align-items:center}.sheet{border-radius:18px}}
-  .sheet .imgbox{background:#fff;border-radius:12px;overflow:hidden;margin-bottom:12px;text-align:center}
+  /* ---------- Users / account ---------- */
+  .user{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+  .user:last-child{border-bottom:0}
+  .user .main{flex:1;min-width:0} .user .name{font-weight:700} .user .meta{font-size:12px;color:var(--muted)}
+  .user select{width:auto;padding:9px 10px;font-size:14px;border-radius:10px}
+  .profile{display:flex;align-items:center;gap:14px}
+  .profile .avatar{width:58px;height:58px;font-size:22px}
+  .menu-item{display:flex;align-items:center;gap:12px;padding:14px 2px;border-bottom:1px solid var(--line);color:var(--ink);font-weight:600;cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left}
+  .menu-item:last-child{border-bottom:0}
+  .menu-item.red{color:var(--red)}
+  .menu-item svg.i{color:var(--muted)} .menu-item.red svg.i{color:var(--red)}
+
+  /* ---------- Detail sheet ---------- */
+  .modal{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:50;display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
+  @keyframes fade{from{opacity:0}}
+  .sheet{background:var(--bg);width:100%;max-height:94vh;max-height:94dvh;overflow:auto;border-radius:22px 22px 0 0;padding:8px 16px calc(24px + env(safe-area-inset-bottom));animation:slide .25s ease-out}
+  @keyframes slide{from{transform:translateY(40px);opacity:.6}}
+  .grab{width:40px;height:5px;border-radius:5px;background:#cbd5e1;margin:4px auto 12px}
+  .sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;position:sticky;top:-8px;background:var(--bg);padding:8px 0;z-index:2}
+  .sheet .imgbox{background:#fff;border-radius:14px;overflow:hidden;margin-bottom:14px;text-align:center;box-shadow:var(--shadow)}
   .sheet .imgbox img{max-width:100%;display:block;margin:0 auto}
-  .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#0f172a;color:#fff;padding:11px 16px;border-radius:10px;font-size:14px;z-index:99;max-width:90vw}
-  .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .credit{text-align:center;font-size:12px;color:var(--muted);margin-top:18px;letter-spacing:.02em}
-  .credit b{color:var(--navy-2);letter-spacing:.06em}
-  .note{font-size:12px;color:var(--muted);margin-top:10px}
-  @media(max-width:420px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+  /* ================= DESKTOP ================= */
+  @media (min-width: 900px){
+    :root{--top:0px;--bottom:0px}
+    body{font-size:15px}
+    .auth-brand{display:flex;flex:1.1;flex-direction:column;justify-content:space-between;padding:56px;color:#fff;background:radial-gradient(circle at 85% 10%,rgba(34,184,207,.35),transparent 45%),linear-gradient(150deg,#0b2545,#13315c 60%,#1d4f91)}
+    .auth-brand .logo{width:54px;height:54px;font-size:19px;border-radius:15px}
+    .auth-brand h2{font-size:40px;line-height:1.1;margin:0 0 16px;letter-spacing:-.02em;max-width:520px}
+    .auth-brand p{font-size:17px;opacity:.8;max-width:460px;margin:0}
+    .feat{display:grid;gap:14px;margin-top:36px;max-width:460px}
+    .feat div{display:flex;gap:12px;align-items:center;font-size:15px;opacity:.92}
+    .feat svg.i{color:var(--accent-2)}
+    .auth-brand small{opacity:.6}
+    .auth-main{flex:1;background:#fff}
+    .auth-box .logo{display:none}
+
+    .topbar,.bottomnav{display:none}
+    .sidebar{display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;width:260px;background:var(--navy);color:#cbd5e1;padding:24px 16px;z-index:20}
+    .sidebar .brand{display:flex;align-items:center;gap:12px;padding:0 8px 26px}
+    .sidebar .brand b{color:#fff;font-size:13px;letter-spacing:.06em;line-height:1.3}
+    .sidebar nav{display:flex;flex-direction:column;gap:4px;flex:1}
+    .sidebar nav button{display:flex;align-items:center;gap:12px;border:0;background:none;color:#cbd5e1;padding:12px 12px;border-radius:12px;font-weight:600;cursor:pointer;text-align:left;font-size:14.5px}
+    .sidebar nav button:hover{background:rgba(255,255,255,.06);color:#fff}
+    .sidebar nav button.on{background:rgba(255,255,255,.12);color:#fff}
+    .sidebar .me{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:rgba(255,255,255,.06)}
+    .sidebar .me .avatar{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff}
+    .sidebar .me b{color:#fff;font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sidebar .me small{font-size:11px;opacity:.7}
+    .sidebar .me .out{margin-left:auto;background:none;border:0;color:#cbd5e1;cursor:pointer;padding:6px;border-radius:8px}
+    .sidebar .me .out:hover{background:rgba(255,255,255,.1);color:#fff}
+    .sidebar .credit{color:#7f93b0;margin-top:14px;font-size:11px}
+    .sidebar .credit b{color:#cbd5e1}
+
+    main{margin-left:260px;max-width:none;padding:36px 44px 60px}
+    .page{max-width:1080px}
+    .page-head{margin:0 0 24px}
+    .page-head h1{font-size:28px}
+    .check-grid{display:grid;grid-template-columns:minmax(380px,1fr) minmax(380px,1.1fr);gap:24px;align-items:start}
+    .check-grid #result:empty::before{content:"Results will appear here";display:grid;place-items:center;height:260px;border:2px dashed #d6deea;border-radius:var(--radius);color:#94a3b8;font-weight:600}
+    .sticky-cta{position:static}
+    .action{padding:26px 20px}
+    .stats{margin:0 0 16px;padding:2px 0 4px;flex-wrap:wrap}
+    .records-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .records-grid .log{margin:0}
+    .records-grid .empty{grid-column:1/-1}
+    .users-grid{display:grid;grid-template-columns:400px 1fr;gap:24px;align-items:start}
+    .acct{max-width:560px}
+    .modal{justify-content:flex-end;align-items:stretch}
+    .sheet{width:560px;max-height:none;height:100vh;border-radius:0;padding:20px 24px 32px;animation:side .25s ease-out}
+    @keyframes side{from{transform:translateX(40px);opacity:.6}}
+    .grab{display:none}
+    .toast{bottom:28px}
+    .btn:hover{filter:brightness(1.05)}
+    .log:hover{transform:translateY(-1px);box-shadow:0 2px 4px rgba(15,23,42,.06),0 12px 28px rgba(15,23,42,.08)}
+  }
+  @media (min-width: 1300px){ .records-grid{grid-template-columns:repeat(3,1fr)} }
 </style>
 </head>
 <body>
 
-<!-- Loading -->
-<div id="v-loading" class="center-wrap"><div class="spinner" style="border-color:#cbd5e1;border-top-color:#1d6fd8;width:30px;height:30px"></div></div>
+<!-- Icons -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-scan" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M8 12.5l2.5 2.5L16 9.5"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.8"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2.5"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M2.5 19.5a6.5 6.5 0 0 1 13 0"/><path d="M16 5.2a3.5 3.5 0 0 1 0 6.6M18.5 19.5a6.5 6.5 0 0 0-3-5.5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="4"/><path d="M4 20.5a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 16l-4-4 4-4M6 12h10"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-4.5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M12 3v3M4 12H3M21 12h-1M6 6l1 1M18 6l-1 1"/><rect x="7" y="10" width="10" height="11" rx="2"/><path d="M10 14h4"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/></symbol>
+</svg>
 
-<!-- Not configured yet -->
-<div id="v-pending" class="center-wrap hidden">
-  <div class="card auth" style="text-align:center">
-    <div class="logo" style="margin:0 auto 14px">DS</div>
+<!-- Loading -->
+<div id="v-loading" class="center"><div class="spinner" style="border-color:#cbd5e1;border-top-color:#1d6fd8;width:32px;height:32px"></div></div>
+
+<!-- Not configured -->
+<div id="v-pending" class="center hidden">
+  <div class="card" style="text-align:center;max-width:380px">
+    <div class="logo" style="margin:0 auto 14px;width:52px;height:52px">DS</div>
     <h1>DUTCO SICKLEAVE SYSTEM</h1>
     <p class="sub" style="margin-bottom:0">The system is being set up and will be available shortly.</p>
     <div class="credit">Designed &amp; developed by <b>GHAITH ALGHAITHI</b></div>
   </div>
 </div>
 
+<!-- Shared brand panel (desktop) -->
+<template id="tpl-brand">
+  <aside class="auth-brand">
+    <div style="display:flex;align-items:center;gap:14px"><div class="logo">DS</div><b style="letter-spacing:.08em;font-size:14px">DUTCO SICKLEAVE SYSTEM</b></div>
+    <div>
+      <h2>Verify sick leave certificates in seconds.</h2>
+      <p>For DUTCO HR. Check certificates from DHA, DOH Abu Dhabi, MOHAP and all UAE emirates.</p>
+      <div class="feat">
+        <div><svg class="i"><use href="#i-shield"/></svg>Detects edited dates, names and reference numbers</div>
+        <div><svg class="i"><use href="#i-scan"/></svg>Check up to 10 certificates at once</div>
+        <div><svg class="i"><use href="#i-clock"/></svg>Records kept securely for 30 days</div>
+      </div>
+    </div>
+    <small>Designed &amp; developed by GHAITH ALGHAITHI</small>
+  </aside>
+</template>
+
 <!-- First-time setup -->
-<div id="v-setup" class="center-wrap hidden">
-  <form class="card auth" id="f-setup">
-    <div class="logo">DS</div>
-    <h1>First-time setup</h1>
-    <p class="sub">Create the administrator account for DUTCO SICKLEAVE SYSTEM. This screen appears only once.</p>
-    <label>Full name</label><input name="fullName" required autocomplete="name">
-    <label>Admin username</label><input name="username" required autocapitalize="none" autocomplete="username" pattern="[a-z0-9._\-]{3,30}">
-    <label>Password (min 8)</label><input name="password" type="password" required minlength="8" autocomplete="new-password">
-    <div style="margin-top:18px"><button class="btn">Create admin</button></div>
-    <div class="err"></div>
-    <div class="credit">Designed &amp; developed by <b>GHAITH ALGHAITHI</b></div>
-  </form>
+<div id="v-setup" class="auth-wrap hidden">
+  <div class="brand-slot"></div>
+  <div class="auth-main">
+    <form class="auth-box" id="f-setup">
+      <div class="logo">DS</div>
+      <h1>First-time setup</h1>
+      <p class="sub">Create the administrator account. This screen appears only once.</p>
+      <label class="f">Full name</label><input name="fullName" required autocomplete="name">
+      <label class="f">Admin username</label><input name="username" required autocapitalize="none" autocomplete="username" pattern="[a-z0-9._\-]{3,30}">
+      <label class="f">Password (min 8)</label><input name="password" type="password" required minlength="8" autocomplete="new-password">
+      <button class="btn">Create admin</button>
+      <div class="err"></div>
+      <div class="credit">Designed &amp; developed by <b>GHAITH ALGHAITHI</b></div>
+    </form>
+  </div>
 </div>
 
 <!-- Login -->
-<div id="v-login" class="center-wrap hidden">
-  <form class="card auth" id="f-login">
-    <div class="logo">DS</div>
-    <h1>DUTCO SICKLEAVE SYSTEM</h1>
-    <p class="sub">HR access only. Sign in to verify employee sick leave certificates.</p>
-    <label>Username</label><input name="username" required autocapitalize="none" autocomplete="username">
-    <label>Password</label><input name="password" type="password" required autocomplete="current-password">
-    <div style="margin-top:18px"><button class="btn">Sign in</button></div>
-    <div class="err"></div>
-    <div class="credit">Designed &amp; developed by <b>GHAITH ALGHAITHI</b></div>
-  </form>
+<div id="v-login" class="auth-wrap hidden">
+  <div class="brand-slot"></div>
+  <div class="auth-main">
+    <form class="auth-box" id="f-login">
+      <div class="logo">DS</div>
+      <h1>Welcome back</h1>
+      <p class="sub">Sign in to DUTCO SICKLEAVE SYSTEM. HR access only.</p>
+      <label class="f">Username</label><input name="username" required autocapitalize="none" autocomplete="username">
+      <label class="f">Password</label><input name="password" type="password" required autocomplete="current-password">
+      <button class="btn">Sign in</button>
+      <div class="err"></div>
+      <div class="credit">Designed &amp; developed by <b>GHAITH ALGHAITHI</b></div>
+    </form>
+  </div>
+</div>
+
+<!-- Sign-in confirmation -->
+<style>
+  .welcome{position:fixed;inset:0;z-index:100;background:rgba(243,245,249,.97);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;animation:fade .2s}
+  .wbox{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:24px}
+  .wring{width:88px;height:88px;border-radius:50%;background:#fff;box-shadow:var(--shadow);display:grid;place-items:center;margin-bottom:14px;transition:background .3s,transform .3s}
+  .wring .spinner{width:38px;height:38px;border-color:#cbd5e1;border-top-color:var(--accent)}
+  .wcheck{display:none;width:44px;height:44px;stroke:#fff;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:30;stroke-dashoffset:30}
+  .welcome.ok .wring{background:var(--green);transform:scale(1.06)}
+  .welcome.ok .wring .spinner{display:none}
+  .welcome.ok .wcheck{display:block;animation:draw .45s .05s ease-out forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .wbox b{font-size:20px} .wbox span{color:var(--muted);font-size:14px}
+</style>
+<div id="v-welcome" class="welcome hidden">
+  <div class="wbox">
+    <div class="wring"><div class="spinner"></div><svg class="wcheck" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <b id="w-title">Signing you in…</b>
+    <span id="w-sub">Checking your username and password</span>
+  </div>
 </div>
 
 <!-- App -->
 <div id="v-app" class="hidden">
-  <header class="top">
-    <div class="brand"><div class="logo">DS</div><div style="min-width:0"><b>DUTCO SICKLEAVE SYSTEM</b><small id="who"></small></div></div>
-    <button class="iconbtn" id="b-logout">Sign out</button>
+  <!-- Mobile top bar -->
+  <header class="topbar">
+    <div class="logo">DS</div>
+    <div class="title"><b>DUTCO SLS</b><small id="page-title">Check sick leave</small></div>
+    <button class="avatar" id="top-avatar" aria-label="Account">?</button>
   </header>
-  <main>
-    <div class="tabs hidden" id="admin-tabs">
-      <button data-tab="upload" class="on">Check</button>
-      <button data-tab="logs">Records</button>
-      <button data-tab="users">Users</button>
-    </div>
 
-    <!-- Upload / check -->
-    <section id="t-upload">
-      <div id="result"></div>
-      <div class="card">
-        <h2>Check sick leave</h2>
-        <p class="sub">Photograph or upload the employee's certificate(s). Up to 10 at once. Accepted: DHA, DOH Abu Dhabi, MOHAP / EHS and all UAE emirates.</p>
-        <label class="drop" id="drop">
+  <!-- Desktop sidebar -->
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">DS</div><b>DUTCO<br>SICKLEAVE SYSTEM</b></div>
+    <nav id="side-nav"></nav>
+    <div class="me">
+      <div class="avatar" id="side-avatar">?</div>
+      <div style="min-width:0"><b id="side-name"></b><small id="side-role"></small></div>
+      <button class="out" id="side-out" title="Sign out"><svg class="i"><use href="#i-out"/></svg></button>
+    </div>
+    <div class="credit">Designed &amp; developed by <b>GHAITH ALGHAITHI</b></div>
+  </aside>
+
+  <main>
+    <!-- Check -->
+    <section id="t-upload" class="page">
+      <div class="page-head"><h1>Check sick leave</h1><p>Scan or upload employee certificates to verify them.</p></div>
+      <div class="check-grid">
+        <div>
+          <div id="pick-area">
+            <div class="hero-actions">
+              <button class="action primary" id="b-cam"><span class="ic"><svg class="i"><use href="#i-camera"/></svg></span><span><b>Scan</b><span>Take a photo</span></span></button>
+              <button class="action secondary" id="b-files"><span class="ic"><svg class="i"><use href="#i-upload"/></svg></span><span><b>Upload</b><span>Photos or PDF</span></span></button>
+            </div>
+            <div class="accepted"><span class="chip">DHA</span><span class="chip">DOH ABU DHABI</span><span class="chip">MOHAP / EHS</span><span class="chip">ALL UAE</span><span class="chip">UP TO 10 FILES</span></div>
+          </div>
+          <input type="file" id="file-cam" accept="image/*" capture="environment" class="hidden">
           <input type="file" id="file" accept="image/*,application/pdf" multiple class="hidden">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="4"/></svg>
-          <b id="drop-title">Tap to take photo or choose certificates</b>
-          <span>JPG, PNG or PDF · max 10 MB each · up to 10 files</span>
-        </label>
-        <div id="thumbs" class="items hidden"></div>
-        <div id="prog" class="hidden"><div class="progress"><i id="bar"></i></div><div class="steps" id="step"></div></div>
-        <div style="margin-top:14px"><button class="btn" id="b-check" disabled>Verify sick leave</button></div>
-        <div class="err" id="up-err"></div>
+          <div id="thumbs" class="items hidden"></div>
+          <div id="prog" class="hidden"><div class="progress"><i id="bar"></i></div><div class="steps" id="step"></div></div>
+          <div class="sticky-cta hidden" id="cta"><button class="btn" id="b-check" disabled>Verify sick leave</button></div>
+          <div class="err" id="up-err"></div>
+        </div>
+        <div id="result"></div>
       </div>
     </section>
 
-    <!-- Admin: records -->
-    <section id="t-logs" class="hidden">
+    <!-- Records -->
+    <section id="t-logs" class="page hidden">
+      <div class="page-head"><h1>Records</h1><p>Every check from the last 30 days. Only admins can see this.</p></div>
       <div class="stats" id="stats"></div>
-      <div class="card" style="padding:12px">
-        <input id="q" placeholder="Search name, username, reference…" autocomplete="off">
-      </div>
-      <div id="logs"></div>
+      <div class="search"><svg class="i"><use href="#i-search"/></svg><input id="q" placeholder="Search employee, HR user, reference…" autocomplete="off"></div>
+      <div id="logs" class="records-grid"></div>
       <p class="note">Records and images are deleted automatically 30 days after upload.</p>
     </section>
 
-    <!-- Admin: users -->
-    <section id="t-users" class="hidden">
-      <div class="card">
-        <h2>Add HR user</h2>
-        <form id="f-user">
-          <div class="row">
-            <div><label>Full name</label><input name="fullName" required></div>
-            <div><label>Staff ID (optional)</label><input name="employeeId"></div>
-          </div>
-          <div class="row">
-            <div><label>Username</label><input name="username" required autocapitalize="none" pattern="[a-z0-9._\-]{3,30}" title="3-30 characters: a-z 0-9 . _ -"></div>
-            <div><label>Password (min 8)</label><input name="password" required minlength="8"></div>
-          </div>
-          <label>Role</label>
-          <select name="role"><option value="employee">HR user</option><option value="admin">Admin</option></select>
-          <div style="margin-top:16px"><button class="btn">Add user</button></div>
-          <div class="err"></div>
-        </form>
+    <!-- Users -->
+    <section id="t-users" class="page hidden">
+      <div class="page-head"><h1>Users</h1><p>Add and manage HR staff who can check sick leave.</p></div>
+      <div class="users-grid">
+        <div class="card">
+          <h2>Add HR user</h2>
+          <form id="f-user">
+            <label class="f">Full name</label><input name="fullName" required>
+            <label class="f">Staff ID (optional)</label><input name="employeeId">
+            <label class="f">Username</label><input name="username" required autocapitalize="none" pattern="[a-z0-9._\-]{3,30}" title="3-30 characters: a-z 0-9 . _ -">
+            <label class="f">Password (min 8)</label><input name="password" required minlength="8">
+            <label class="f">Role</label>
+            <select name="role"><option value="employee">HR user</option><option value="admin">Admin</option></select>
+            <button class="btn" style="margin-top:18px">Add user</button>
+            <div class="err"></div>
+          </form>
+        </div>
+        <div class="card"><h2>All users</h2><div id="users"></div></div>
       </div>
-      <div class="card"><h2>Users</h2><div id="users"></div></div>
     </section>
-    <div class="credit">Designed &amp; developed by <b>GHAITH ALGHAITHI</b></div>
+
+    <!-- Account -->
+    <section id="t-account" class="page hidden">
+      <div class="page-head"><h1>Account</h1></div>
+      <div class="acct">
+        <div class="card profile"><div class="avatar" id="acc-avatar">?</div><div><b id="acc-name" style="font-size:17px"></b><div class="note" style="margin:2px 0 0" id="acc-role"></div></div></div>
+        <div class="card" style="padding:4px 16px">
+          <div class="menu-item" style="cursor:default"><svg class="i"><use href="#i-phone"/></svg><div><div>Install as an app</div><div class="note" style="margin:2px 0 0;font-weight:500">iPhone: Share → Add to Home Screen. Android: menu ⋮ → Install app.</div></div></div>
+          <button class="menu-item red" id="b-logout"><svg class="i"><use href="#i-out"/></svg>Sign out</button>
+        </div>
+        <div class="credit">DUTCO SICKLEAVE SYSTEM<br>Designed &amp; developed by <b>GHAITH ALGHAITHI</b></div>
+      </div>
+    </section>
   </main>
+
+  <!-- Mobile bottom nav -->
+  <nav class="bottomnav" id="bottom-nav"></nav>
 </div>
 
 <div id="modal" class="modal hidden"><div class="sheet" id="sheet"></div></div>
@@ -257,7 +442,6 @@
 (() => {
   const EMAIL_DOMAIN = "dutco-sls.local";
   const RETENTION_DAYS = 30;
-  // Official verification portals (final confirmation is done here by the admin)
   const PORTALS = {
     DHA:   { name: "Dubai Health Authority (Sheryan verification)", url: "https://services.dha.gov.ae/sheryan/wps/portal/home/services-professional/online-verification" },
     DOH:   { name: "DOH Abu Dhabi – Sick Leave Validation", url: "https://www.doh.gov.ae/en/resources/Lists-and-Tools" },
@@ -265,10 +449,16 @@
   };
   PORTALS.EHS = PORTALS.MOHAP; PORTALS.SHA = PORTALS.MOHAP; PORTALS.OTHER_UAE = PORTALS.MOHAP; PORTALS.UNKNOWN = PORTALS.MOHAP;
 
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+
+  // Brand panel on auth screens (desktop)
+  $$(".brand-slot").forEach(s => s.replaceWith($("#tpl-brand").content.cloneNode(true)));
+
   const cfg = window.FIREBASE_CONFIG || {};
   if (!cfg.apiKey || /PASTE/.test(cfg.apiKey) || typeof firebase === "undefined") {
-    document.getElementById("v-loading").classList.add("hidden");
-    document.getElementById("v-pending").classList.remove("hidden");
+    $("#v-loading").classList.add("hidden");
+    $("#v-pending").classList.remove("hidden");
     return;
   }
   firebase.initializeApp(cfg);
@@ -278,8 +468,6 @@
   const fns = firebase.app().functions(window.FUNCTIONS_REGION || "europe-west1");
   const call = (name, data) => fns.httpsCallable(name, { timeout: 180000 })(data).then(r => r.data);
 
-  const $ = (s, el = document) => el.querySelector(s);
-  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
   const show = (id) => ["v-loading","v-pending","v-setup","v-login","v-app"].forEach(v => $("#"+v).classList.toggle("hidden", v !== id));
   const toast = (msg) => { const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.append(t); setTimeout(() => t.remove(), 3000); };
@@ -287,8 +475,39 @@
   const fmtDate = (s) => { if (!s) return "—"; const [y,m,d] = s.split("-"); return `${d}/${m}/${y}`; };
   const fmtTs = (ts) => ts ? ts.toDate().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Dubai" }) : "—";
   const LABEL = { GENUINE: "LIKELY GENUINE", REVIEW: "NEEDS REVIEW", FORGED: "FORGED" };
+  const initial = (s) => (s || "?").trim().charAt(0).toUpperCase() || "?";
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  let loggingIn = false;
+  const welcome = (ok, title, sub) => {
+    const w = $("#v-welcome"); w.classList.remove("hidden"); w.classList.toggle("ok", ok);
+    $("#w-title").textContent = title; $("#w-sub").textContent = sub;
+  };
+  const hideWelcome = () => $("#v-welcome").classList.add("hidden");
 
   let me = null; let unsubLogs = null; let unsubUsers = null; let allLogs = []; let filter = "ALL";
+
+  // ---------- Navigation ----------
+  const TABS = [
+    { id: "upload",  label: "Check",   title: "Check sick leave", icon: "i-scan" },
+    { id: "logs",    label: "Records", title: "Records",          icon: "i-list",  admin: true },
+    { id: "users",   label: "Users",   title: "Users",            icon: "i-users", admin: true },
+    { id: "account", label: "Account", title: "Account",          icon: "i-user" },
+  ];
+  function buildNav() {
+    const tabs = TABS.filter(t => !t.admin || me.isAdmin);
+    const html = tabs.map(t => `<button data-tab="${t.id}"><svg class="i"><use href="#${t.icon}"/></svg><span>${t.label}</span></button>`).join("");
+    $("#bottom-nav").innerHTML = html;
+    $("#side-nav").innerHTML = html;
+    $$("[data-tab]").forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+  }
+  function switchTab(t) {
+    $$("[data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
+    TABS.forEach(x => $("#t-" + x.id).classList.toggle("hidden", x.id !== t));
+    $("#page-title").textContent = (TABS.find(x => x.id === t) || {}).title || "";
+    window.scrollTo(0, 0);
+  }
+  $("#top-avatar").onclick = () => switchTab("account");
 
   // ---------- Boot ----------
   auth.onAuthStateChanged(async (u) => {
@@ -305,12 +524,22 @@
     const p = prof && prof.exists ? prof.data() : {};
     if (p.active === false) { await auth.signOut(); return; }
     me = { uid: u.uid, isAdmin: token.claims.role === "admin", fullName: p.fullName || u.displayName || "", username: p.username || "" };
-    $("#who").textContent = `${me.fullName || me.username}${me.isAdmin ? " · Admin" : ""}`;
-    $("#admin-tabs").classList.toggle("hidden", !me.isAdmin);
+    const name = me.fullName || me.username;
+    const role = me.isAdmin ? "Administrator" : "HR user";
+    ["#top-avatar", "#side-avatar", "#acc-avatar"].forEach(s => $(s).textContent = initial(name));
+    $("#side-name").textContent = name; $("#side-role").textContent = role;
+    $("#acc-name").textContent = name; $("#acc-role").textContent = `@${me.username} · ${role}`;
+    buildNav();
     switchTab("upload");
     resetUpload();
     $("#result").innerHTML = "";
     show("v-app");
+    if (loggingIn) {
+      welcome(true, `Welcome, ${name.split(" ")[0]}`, "Signed in successfully");
+      await sleep(1300);
+      loggingIn = false;
+    }
+    hideWelcome();
     if (me.isAdmin) { startLogs(); startUsers(); }
   });
 
@@ -321,6 +550,7 @@
     try {
       const data = { fullName: f.fullName.value, username: f.username.value.trim().toLowerCase(), password: f.password.value };
       await call("setupAdmin", data);
+      loggingIn = true; welcome(false, "Setting things up…", "Creating your admin account");
       await auth.signInWithEmailAndPassword(`${data.username}@${EMAIL_DOMAIN}`, data.password);
     } catch (x) { err.textContent = errMsg(x); } finally { btn.disabled = false; }
   });
@@ -328,32 +558,29 @@
   $("#f-login").addEventListener("submit", async (e) => {
     e.preventDefault(); const f = e.target; const err = $(".err", f); err.textContent = "";
     const btn = $("button", f); btn.disabled = true;
+    loggingIn = true;
+    welcome(false, "Signing you in…", "Checking your username and password");
     try {
       await auth.signInWithEmailAndPassword(`${f.username.value.trim().toLowerCase()}@${EMAIL_DOMAIN}`, f.password.value);
       f.reset();
     } catch (x) {
+      loggingIn = false; hideWelcome();
       err.textContent = /user-disabled/.test(x.code) ? "This account is disabled." : "Wrong username or password.";
     } finally { btn.disabled = false; }
   });
-  $("#b-logout").onclick = () => auth.signOut();
-
-  // ---------- Tabs ----------
-  $$("#admin-tabs button").forEach(b => b.onclick = () => switchTab(b.dataset.tab));
-  function switchTab(t) {
-    $$("#admin-tabs button").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
-    ["upload","logs","users"].forEach(x => $("#t-" + x).classList.toggle("hidden", x !== t));
-    window.scrollTo(0, 0);
-  }
+  const logout = () => auth.signOut();
+  $("#b-logout").onclick = logout; $("#side-out").onclick = logout;
 
   // ---------- Check sick leave (one or many) ----------
   const MAX_BATCH = 10;
   const PARALLEL = 3;
-  let picked = []; // [{blob, type, ext, name, thumb, empName, empId}]
+  let picked = [];
   let busy = false;
 
-  $("#file").addEventListener("change", async (e) => {
-    const files = [...e.target.files]; e.target.value = "";
-    if (!files.length) return;
+  $("#b-cam").onclick = () => $("#file-cam").click();
+  $("#b-files").onclick = () => $("#file").click();
+
+  async function addFiles(files) {
     const errs = [];
     for (const f of files) {
       if (picked.length >= MAX_BATCH) { errs.push(`Only ${MAX_BATCH} certificates per batch.`); break; }
@@ -369,27 +596,33 @@
     }
     $("#up-err").textContent = [...new Set(errs)].join(" ");
     renderThumbs();
-  });
+  }
+  ["#file", "#file-cam"].forEach(s => $(s).addEventListener("change", async (e) => {
+    const files = [...e.target.files]; e.target.value = "";
+    if (files.length) { $("#result").innerHTML = ""; await addFiles(files); }
+  }));
 
   function renderThumbs() {
     const box = $("#thumbs");
-    box.classList.toggle("hidden", !picked.length);
+    const n = picked.length;
+    box.classList.toggle("hidden", !n);
+    $("#pick-area").classList.toggle("hidden", n > 0);
+    $("#cta").classList.toggle("hidden", !n);
     box.innerHTML = picked.map((p, i) => `
       <div class="item">
         <div class="pic">${p.thumb ? `<img alt="" src="${p.thumb}">` : "PDF"}<span class="n">${i + 1}</span></div>
         <div class="f">
           <input data-i="${i}" data-k="empName" placeholder="Employee name (optional)" value="${esc(p.empName)}" ${busy ? "disabled" : ""} autocomplete="off">
-          <input data-i="${i}" data-k="empId" placeholder="Emirates ID (optional)" value="${esc(p.empId)}" ${busy ? "disabled" : ""} autocomplete="off">
+          <input data-i="${i}" data-k="empId" placeholder="Emirates ID (optional)" value="${esc(p.empId)}" ${busy ? "disabled" : ""} autocomplete="off" inputmode="numeric">
         </div>
         ${busy ? "" : `<button class="x" data-i="${i}" aria-label="Remove">×</button>`}
       </div>`).join("")
-      + (picked.length && picked.length < MAX_BATCH && !busy ? `<label class="addmore" for="file">+ Add more certificates</label>` : "");
+      + (n && n < MAX_BATCH && !busy ? `<div class="row"><button class="addmore" data-add="cam">+ Scan another</button><button class="addmore" data-add="file">+ Add files</button></div>` : "");
     $$("input[data-k]", box).forEach(inp => inp.oninput = () => { picked[+inp.dataset.i][inp.dataset.k] = inp.value; });
     $$(".item .x", box).forEach(b => b.onclick = () => { const p = picked.splice(+b.dataset.i, 1)[0]; if (p?.thumb) URL.revokeObjectURL(p.thumb); renderThumbs(); });
-    const n = picked.length;
+    $$("[data-add]", box).forEach(b => b.onclick = () => $(b.dataset.add === "cam" ? "#file-cam" : "#file").click());
     $("#b-check").disabled = !n || busy;
     if (!busy) $("#b-check").textContent = n > 1 ? `Verify ${n} sick leaves` : "Verify sick leave";
-    $("#drop").classList.toggle("hidden", n > 0);
   }
 
   async function compressImage(file) {
@@ -406,7 +639,7 @@
 
   function resetUpload() {
     picked.forEach(p => p.thumb && URL.revokeObjectURL(p.thumb));
-    picked = []; busy = false; $("#file").value = "";
+    picked = []; busy = false; $("#file").value = ""; $("#file-cam").value = "";
     $("#prog").classList.add("hidden"); $("#up-err").textContent = "";
     renderThumbs();
   }
@@ -425,7 +658,7 @@
     $("#up-err").textContent = ""; renderThumbs();
     const items = picked.slice(); const total = items.length;
     const results = new Array(total); let done = 0; let next = 0; let stop = false;
-    const label = () => total > 1 ? `Checked ${done} of ${total} — reading certificates and checking dates, authority and signs of editing…` : "Reading certificate and checking dates, authority and signs of editing…";
+    const label = () => total > 1 ? `Checked ${done} of ${total} — reading certificates and checking dates, authority and signs of editing…` : "Reading the certificate and checking dates, authority and signs of editing…";
     setProg(8, label());
     const worker = async () => {
       while (next < total) {
@@ -444,7 +677,7 @@
     renderResults(results);
     resetUpload();
     btn.textContent = "Verify sick leave";
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (window.innerWidth < 900) window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const MSG = {
@@ -465,9 +698,9 @@
         <dt>Facility</dt><dd>${esc(r.facility || "—")}</dd>
       </dl>
       ${reasons ? `<div class="reasons">${reasons}</div>` : ""}
-      <div class="row" style="margin-top:12px">
+      <div class="row" style="margin-top:14px">
         <button class="btn ghost sm" data-copy="${esc(r.reference || "")}" ${r.reference ? "" : "disabled"}>Copy reference</button>
-        <a class="btn sm" style="text-decoration:none" href="${portal.url}" target="_blank" rel="noopener noreferrer">Open ${esc(r.authority && r.authority !== "UNKNOWN" ? r.authority : "MOHAP")} portal</a>
+        <a class="btn sm" href="${portal.url}" target="_blank" rel="noopener noreferrer">Open ${esc(r.authority && r.authority !== "UNKNOWN" ? r.authority : "MOHAP")} portal</a>
       </div>`;
   }
 
@@ -483,7 +716,7 @@
     } else {
       html = `
       <div class="card" style="padding:14px">
-        <h2 style="margin-bottom:10px">${list.length} sick leave${list.length > 1 ? "s" : ""} checked${fail ? ` · ${fail} not checked` : ""}</h2>
+        <h3>${list.length} sick leave${list.length > 1 ? "s" : ""} checked${fail ? ` · ${fail} not checked` : ""}</h3>
         <div class="summary">
           <div class="g"><b>${count("GENUINE")}</b>GENUINE</div>
           <div class="a"><b>${count("REVIEW")}</b>REVIEW</div>
@@ -496,8 +729,9 @@
         <div class="res"><div class="bar" style="background:${BAR_BG[r.verdict]}"><span>${LABEL[r.verdict]}</span><small>#${i + 1} · ${esc(who(r))}</small></div>
           <div class="body">${resultBody(r)}</div></div>`).join("")}`;
     }
-    $("#result").innerHTML = html;
+    $("#result").innerHTML = html + `<button class="btn ghost" id="b-new" style="margin-top:4px">Check another</button>`;
     $$("#result [data-copy]").forEach(b => b.onclick = () => navigator.clipboard.writeText(b.dataset.copy).then(() => toast("Reference copied")));
+    $("#b-new").onclick = () => { $("#result").innerHTML = ""; window.scrollTo({ top: 0, behavior: "smooth" }); };
   }
 
   // ---------- Admin: records ----------
@@ -527,13 +761,13 @@
       return `<div class="log ${c.verdict}" data-id="${c.id}">
         <div class="main">
           <div class="name">${esc(c.subjectName || "Unknown employee")}</div>
-          <div class="meta">Checked by @${esc(c.username)}</div>
-          <div class="meta">${fmtTs(c.createdAt)} · ${esc(c.extracted?.authority || "?")} · ${fmtDate(c.extracted?.start)} → ${fmtDate(c.extracted?.end)}</div>
+          <div class="meta">${esc(c.extracted?.authority || "?")} · ${fmtDate(c.extracted?.start)} → ${fmtDate(c.extracted?.end)}</div>
+          <div class="meta">by @${esc(c.username)} · ${fmtTs(c.createdAt)}</div>
           <div class="meta">Deleted in ${daysLeft} day(s)</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><span class="pill ${c.verdict}">${LABEL[c.verdict]}</span>${dec}</div>
       </div>`;
-    }).join("") : `<div class="empty">No records.</div>`;
+    }).join("") : `<div class="empty">No records yet.</div>`;
     $$("#logs .log").forEach(el => el.onclick = () => { const c = allLogs.find(x => x.id === el.dataset.id); if (c) renderDetail(c); });
   }
 
@@ -545,14 +779,13 @@
     const sheet = $("#sheet"); sheet.dataset.id = c.id;
     const imgHtml = refresh ? ($(".imgbox", sheet)?.outerHTML || "") : `<div class="imgbox"><div class="empty">Loading image…</div></div>`;
     sheet.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <b>${esc(c.subjectName || "Unknown employee")}</b><button class="btn ghost sm" id="m-close">Close</button>
-      </div>
-      <div class="verdict v-${c.verdict}" style="padding:14px"><div class="big" style="font-size:22px">${LABEL[c.verdict]}</div>
+      <div class="grab"></div>
+      <div class="sheet-head"><b style="font-size:17px">${esc(c.subjectName || "Unknown employee")}</b><button class="btn ghost sm" id="m-close">Close</button></div>
+      <div class="verdict v-${c.verdict}" style="padding:16px"><div class="big" style="font-size:22px">${LABEL[c.verdict]}</div>
         <p>${esc(x.summary || "")}</p></div>
       ${imgHtml}
-      <div class="card"><h2>Findings</h2>${flags}</div>
-      <div class="card"><h2>Certificate details</h2><dl class="kv">
+      <div class="card"><h3>Findings</h3>${flags}</div>
+      <div class="card"><h3>Certificate details</h3><dl class="kv">
         <dt>Authority</dt><dd>${esc(x.authority)} ${x.emirate ? "· " + esc(x.emirate) : ""}</dd>
         <dt>Reference</dt><dd>${esc(x.reference || "—")}</dd>
         <dt>Patient</dt><dd>${esc(x.patientName || "—")}${x.patientNameEn && x.patientNameEn !== x.patientName ? " / " + esc(x.patientNameEn) : ""}</dd>
@@ -563,28 +796,29 @@
         <dt>Leave</dt><dd>${fmtDate(x.start)} → ${fmtDate(x.end)} ${x.statedDays ? `(${x.statedDays} day(s) stated)` : ""}</dd>
         <dt>QR / Seal / Sign</dt><dd>${yn(x.hasQr)} / ${yn(x.hasSeal)} / ${yn(x.hasSignature)}</dd>
       </dl></div>
-      <div class="card"><h2>Submission</h2><dl class="kv">
-        <dt>Employee</dt><dd>${esc(c.subjectName || "—")}${c.subjectId ? " · " + esc(c.subjectId) : ""}${c.subjectEntered ? "" : " <span class=\"meta\">(name read from certificate)</span>"}</dd>
+      <div class="card"><h3>Submission</h3><dl class="kv">
+        <dt>Employee</dt><dd>${esc(c.subjectName || "—")}${c.subjectId ? " · " + esc(c.subjectId) : ""}${c.subjectEntered ? "" : ` <span class="note">(read from certificate)</span>`}</dd>
         <dt>Checked by</dt><dd>${esc(c.fullName)} (@${esc(c.username)})</dd>
         <dt>Checked at</dt><dd>${fmtTs(c.createdAt)}</dd>
         <dt>Auto-delete</dt><dd>${fmtTs(c.expiresAt)}</dd>
       </dl></div>
-      <div class="card"><h2>Confirm with official portal</h2>
+      <div class="card"><h3>Confirm with official portal</h3>
         <p class="sub" style="margin-bottom:10px">${esc(portal.name)}</p>
         <div class="row">
           <button class="btn ghost" id="m-copy" ${x.reference ? "" : "disabled"}>Copy reference</button>
-          <a class="btn" href="${portal.url}" target="_blank" rel="noopener noreferrer" style="text-decoration:none">Open portal</a>
+          <a class="btn" href="${portal.url}" target="_blank" rel="noopener noreferrer">Open portal</a>
         </div>
       </div>
-      <div class="card"><h2>HR decision</h2>
+      <div class="card"><h3>HR decision</h3>
         <textarea id="m-note" rows="2" placeholder="Note (optional)">${esc(c.adminNote || "")}</textarea>
         <div class="row" style="margin-top:10px">
-          <button class="btn" style="background:var(--green)" data-dec="confirmed_genuine">Confirmed genuine</button>
+          <button class="btn ok" data-dec="confirmed_genuine">Confirmed genuine</button>
           <button class="btn danger" data-dec="confirmed_forged">Confirmed forged</button>
         </div>
         ${c.adminDecision ? `<p class="note">Current: <b>${c.adminDecision === "confirmed_genuine" ? "Confirmed genuine" : "Confirmed forged"}</b> · ${fmtTs(c.adminDecisionAt)}</p>` : ""}
       </div>`;
     $("#modal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
     $("#m-close").onclick = closeModal;
     $("#m-copy").onclick = () => navigator.clipboard.writeText(x.reference).then(() => toast("Reference copied"));
     $$("[data-dec]", sheet).forEach(b => b.onclick = async () => {
@@ -599,13 +833,14 @@
         const url = await storage.ref(c.filePath).getDownloadURL();
         const box = $(".imgbox", sheet);
         if (box && sheet.dataset.id === c.id) box.innerHTML = c.contentType === "application/pdf"
-          ? `<a class="btn ghost" style="text-decoration:none;border-radius:0" href="${url}" target="_blank" rel="noopener">Open PDF certificate</a>`
+          ? `<a class="btn ghost" style="border-radius:0" href="${url}" target="_blank" rel="noopener">Open PDF certificate</a>`
           : `<a href="${url}" target="_blank" rel="noopener"><img alt="Sick leave certificate" src="${url}"></a>`;
       } catch { const box = $(".imgbox", sheet); if (box) box.innerHTML = `<div class="empty">Image no longer available.</div>`; }
     }
   }
-  function closeModal() { $("#modal").classList.add("hidden"); $("#sheet").dataset.id = ""; }
+  function closeModal() { $("#modal").classList.add("hidden"); $("#sheet").dataset.id = ""; document.body.style.overflow = ""; }
   $("#modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#modal").classList.contains("hidden")) closeModal(); });
 
   // ---------- Admin: users ----------
   function startUsers() {
@@ -613,13 +848,13 @@
       const users = s.docs.map(d => ({ uid: d.id, ...d.data() }));
       $("#users").innerHTML = users.length ? users.map(u => `
         <div class="user" data-uid="${u.uid}">
-          <div class="avatar">${esc((u.fullName || u.username || "?").trim().charAt(0).toUpperCase())}</div>
+          <div class="avatar">${esc(initial(u.fullName || u.username))}</div>
           <div class="main">
-            <div class="name">${esc(u.fullName)} ${u.role === "admin" ? '<span class="pill dec">ADMIN</span>' : '<span class="pill dec" style="background:#eef2f7;color:#475569">HR</span>'} ${u.active === false ? '<span class="pill FORGED">DISABLED</span>' : ""}</div>
+            <div class="name">${esc(u.fullName)} ${u.role === "admin" ? '<span class="pill dec">ADMIN</span>' : '<span class="pill hr">HR</span>'} ${u.active === false ? '<span class="pill FORGED">DISABLED</span>' : ""}</div>
             <div class="meta">@${esc(u.username)}${u.employeeId ? " · " + esc(u.employeeId) : ""}</div>
           </div>
-          <select class="act" style="width:auto;padding:8px">
-            <option value="">Actions</option>
+          <select class="act">
+            <option value="">Manage</option>
             <option value="pw">Reset password</option>
             <option value="toggle">${u.active === false ? "Enable" : "Disable"}</option>
             <option value="role">${u.role === "admin" ? "Make HR user" : "Make admin"}</option>

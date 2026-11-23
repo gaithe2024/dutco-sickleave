@@ -248,6 +248,7 @@
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-4.5"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M12 3v3M4 12H3M21 12h-1M6 6l1 1M18 6l-1 1"/><rect x="7" y="10" width="10" height="11" rx="2"/><path d="M10 14h4"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9z"/><path d="M10 20a2 2 0 0 0 4 0"/></symbol>
   <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/></symbol>
 </svg>
 
@@ -408,7 +409,20 @@
             <div class="err"></div>
           </form>
         </div>
-        <div class="card"><h2>All users</h2><div id="users"></div></div>
+        <div>
+          <div class="card">
+            <h2>Send notification</h2>
+            <form id="f-notify">
+              <label class="f">Send to</label><select name="nto" id="n-target"><option value="all">All users</option></select>
+              <label class="f">Title</label><input name="ntitle" required maxlength="60" placeholder="e.g. Reminder">
+              <label class="f">Message</label><textarea name="nbody" required maxlength="300" rows="3" placeholder="Write your message…"></textarea>
+              <button class="btn" style="margin-top:16px">Send notification</button>
+              <div class="err"></div>
+            </form>
+            <div id="n-history"></div>
+          </div>
+          <div class="card"><h2>All users</h2><div id="users"></div></div>
+        </div>
       </div>
     </section>
 
@@ -419,6 +433,7 @@
         <div class="card profile"><div class="avatar" id="acc-avatar">?</div><div><b id="acc-name" style="font-size:17px"></b><div class="note" style="margin:2px 0 0" id="acc-role"></div></div></div>
         <div class="card" style="padding:4px 16px">
           <div class="menu-item" style="cursor:default"><svg class="i"><use href="#i-phone"/></svg><div><div>Install as an app</div><div class="note" style="margin:2px 0 0;font-weight:500">iPhone: Share → Add to Home Screen. Android: menu ⋮ → Install app.</div></div></div>
+          <div class="menu-item" style="cursor:default"><svg class="i"><use href="#i-bell"/></svg><div style="flex:1;min-width:0"><div>Notifications</div><div class="note" style="margin:2px 0 0;font-weight:500" id="push-note">Get alerts from the admin on this device.</div></div><button class="btn sm" id="b-push">Turn on</button></div>
           <button class="menu-item red" id="b-logout"><svg class="i"><use href="#i-out"/></svg>Sign out</button>
         </div>
         <div class="credit">DUTCO SICKLEAVE SYSTEM<br>Designed &amp; developed by <b>GHAITH ALGHAITHI</b></div>
@@ -437,6 +452,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
 <script src="firebase-config.js"></script>
 <script>
 (() => {
@@ -485,6 +501,7 @@
   };
   const hideWelcome = () => $("#v-welcome").classList.add("hidden");
 
+  let unsubNotifs = null;
   let me = null; let unsubLogs = null; let unsubUsers = null; let allLogs = []; let filter = "ALL";
 
   // ---------- Navigation ----------
@@ -513,6 +530,7 @@
   auth.onAuthStateChanged(async (u) => {
     if (unsubLogs) { unsubLogs(); unsubLogs = null; }
     if (unsubUsers) { unsubUsers(); unsubUsers = null; }
+    if (unsubNotifs) { unsubNotifs(); unsubNotifs = null; }
     if (!u) {
       me = null;
       const setup = await db.doc("config/setup").get().catch(() => null);
@@ -540,7 +558,8 @@
       loggingIn = false;
     }
     hideWelcome();
-    if (me.isAdmin) { startLogs(); startUsers(); }
+    renderPush(); enablePush(false);
+    if (me.isAdmin) { startLogs(); startUsers(); startNotifs(); }
   });
 
   // ---------- Setup / login ----------
@@ -842,10 +861,60 @@
   $("#modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#modal").classList.contains("hidden")) closeModal(); });
 
+  // ---------- Push notifications ----------
+  const VAPID = "BO_wB1sAr41SklBdkPfDxe9amXVrBpon9o4pDBxsfH69ptA-Qi47vUf6UZU5cq4NweJosCn3ZZwmzc6k0qvy4LM";
+  let msg = null; let listening = false;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  const pushOK = () => { try { return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window && !!firebase.messaging && firebase.messaging.isSupported(); } catch { return false; } };
+  function renderPush() {
+    const b = $("#b-push"), note = $("#push-note");
+    if (!pushOK()) {
+      b.textContent = "Not available"; b.disabled = true;
+      note.textContent = isIOS && !standalone ? "iPhone: add this app to your Home Screen, open it from there, then turn on." : "This browser does not support notifications.";
+      return;
+    }
+    const p = Notification.permission;
+    b.disabled = p !== "default";
+    b.textContent = p === "granted" ? "On ✓" : p === "denied" ? "Blocked" : "Turn on";
+    note.textContent = p === "denied" ? "Blocked. Allow notifications for this site in your phone settings." : p === "granted" ? "You will receive alerts on this device." : "Get alerts from the admin on this device.";
+  }
+  async function enablePush(ask) {
+    if (!pushOK()) return renderPush();
+    try {
+      if (ask && Notification.permission === "default") await Notification.requestPermission();
+      if (Notification.permission !== "granted") return renderPush();
+      const reg = await navigator.serviceWorker.register("firebase-messaging-sw.js");
+      msg = msg || firebase.messaging();
+      const token = await msg.getToken({ vapidKey: VAPID, serviceWorkerRegistration: reg });
+      if (token) await call("savePushToken", { token, device: navigator.userAgent.slice(0, 200) });
+      if (ask) toast("Notifications turned on");
+      if (!listening) { listening = true; msg.onMessage(p => toast(`🔔 ${p.notification?.title || ""}: ${p.notification?.body || ""}`)); }
+    } catch (e) { if (ask) toast("Could not turn on notifications: " + errMsg(e)); }
+    renderPush();
+  }
+  $("#b-push").onclick = () => enablePush(true);
+
+  $("#f-notify").addEventListener("submit", async (e) => {
+    e.preventDefault(); const f = e.target; const err = $(".err", f); err.textContent = "";
+    const btn = $("button", f); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Sending…';
+    try {
+      const r = await call("sendNotification", { target: f.nto.value, title: f.ntitle.value, body: f.nbody.value });
+      toast(r.devices ? `Sent to ${r.sent} device(s)` : "No devices have notifications turned on yet.");
+      f.ntitle.value = ""; f.nbody.value = "";
+    } catch (x) { err.textContent = errMsg(x); } finally { btn.disabled = false; btn.textContent = "Send notification"; }
+  });
+  function startNotifs() {
+    unsubNotifs = db.collection("notifications").orderBy("createdAt", "desc").limit(5).onSnapshot(s => {
+      $("#n-history").innerHTML = s.empty ? "" : `<h3 style="margin-top:20px">Recently sent</h3>` + s.docs.map(d => { const n = d.data(); return `<div class="user"><div class="main"><div class="name">${esc(n.title)}</div><div class="meta">${esc(n.body)}</div><div class="meta">${fmtTs(n.createdAt)} · ${n.sent || 0} device(s)</div></div></div>`; }).join("");
+    }, () => {});
+  }
+
   // ---------- Admin: users ----------
   function startUsers() {
     unsubUsers = db.collection("users").orderBy("fullName").onSnapshot(s => {
       const users = s.docs.map(d => ({ uid: d.id, ...d.data() }));
+      $("#n-target").innerHTML = `<option value="all">All users</option>` + users.map(u => `<option value="${u.uid}">${esc(u.fullName)} (@${esc(u.username)})</option>`).join("");
       $("#users").innerHTML = users.length ? users.map(u => `
         <div class="user" data-uid="${u.uid}">
           <div class="avatar">${esc(initial(u.fullName || u.username))}</div>

@@ -154,6 +154,13 @@
   .pill.GENUINE{background:var(--green-bg);color:var(--green)} .pill.REVIEW{background:var(--amber-bg);color:var(--amber)} .pill.FORGED{background:var(--red);color:#fff}
   .pill.dec{background:#e8eefc;color:#1e40af} .pill.hr{background:#eef2f7;color:#475569}
 
+  .hist-total{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff}
+  .hist-total b{display:block;font-size:34px;line-height:1.1}
+  .hist-total span{opacity:.8;font-size:13px}
+  .hist-total svg.i{width:40px;height:40px;opacity:.5}
+  .notice{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);color:#1e3a8a;border-radius:12px;padding:11px 13px;font-size:13px;margin-bottom:12px}
+  .notice svg.i{width:18px;height:18px;margin-top:1px}
+
   /* ---------- Users / account ---------- */
   .user{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
   .user:last-child{border-bottom:0}
@@ -249,6 +256,8 @@
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M12 3v3M4 12H3M21 12h-1M6 6l1 1M18 6l-1 1"/><rect x="7" y="10" width="10" height="11" rx="2"/><path d="M10 14h4"/></symbol>
   <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9z"/><path d="M10 20a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-history" viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3 4v4h4"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></symbol>
   <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/></symbol>
 </svg>
 
@@ -392,6 +401,15 @@
       <p class="note">Records and images are deleted automatically 30 days after upload.</p>
     </section>
 
+    <!-- History (HR users: own reports) -->
+    <section id="t-history" class="page hidden">
+      <div class="page-head"><h1>My reports</h1><p>Certificates you checked in the last 30 days.</p></div>
+      <div class="card hist-total"><div><b id="mine-total">0</b><span>certificates checked</span></div><svg class="i"><use href="#i-history"/></svg></div>
+      <div class="stats" id="mine-stats"></div>
+      <div class="notice"><svg class="i"><use href="#i-clock"/></svg><span>Reports and certificate images are deleted automatically <b>30 days</b> after upload.</span></div>
+      <div id="mine" class="records-grid"></div>
+    </section>
+
     <!-- Users -->
     <section id="t-users" class="page hidden">
       <div class="page-head"><h1>Users</h1><p>Add and manage HR staff who can check sick leave.</p></div>
@@ -431,6 +449,16 @@
       <div class="page-head"><h1>Account</h1></div>
       <div class="acct">
         <div class="card profile"><div class="avatar" id="acc-avatar">?</div><div><b id="acc-name" style="font-size:17px"></b><div class="note" style="margin:2px 0 0" id="acc-role"></div></div></div>
+        <div class="card">
+          <h3 style="display:flex;align-items:center;gap:8px"><svg class="i" style="color:var(--accent)"><use href="#i-lock"/></svg>Change password</h3>
+          <form id="f-pw">
+            <label class="f">Current password</label><input type="password" name="cur" required autocomplete="current-password">
+            <label class="f">New password (min 8)</label><input type="password" name="npw" required minlength="8" autocomplete="new-password">
+            <label class="f">Confirm new password</label><input type="password" name="npw2" required minlength="8" autocomplete="new-password">
+            <button class="btn" style="margin-top:16px">Update password</button>
+            <div class="err"></div>
+          </form>
+        </div>
         <div class="card" style="padding:4px 16px">
           <div class="menu-item" style="cursor:default"><svg class="i"><use href="#i-phone"/></svg><div><div>Install as an app</div><div class="note" style="margin:2px 0 0;font-weight:500">iPhone: Share → Add to Home Screen. Android: menu ⋮ → Install app.</div></div></div>
           <div class="menu-item" style="cursor:default"><svg class="i"><use href="#i-bell"/></svg><div style="flex:1;min-width:0"><div>Notifications</div><div class="note" style="margin:2px 0 0;font-weight:500" id="push-note">Get alerts from the admin on this device.</div></div><button class="btn sm" id="b-push">Turn on</button></div>
@@ -501,18 +529,19 @@
   };
   const hideWelcome = () => $("#v-welcome").classList.add("hidden");
 
-  let unsubNotifs = null;
+  let unsubNotifs = null; let unsubMine = null; let myLogs = []; let myFilter = "ALL";
   let me = null; let unsubLogs = null; let unsubUsers = null; let allLogs = []; let filter = "ALL";
 
   // ---------- Navigation ----------
   const TABS = [
     { id: "upload",  label: "Check",   title: "Check sick leave", icon: "i-scan" },
+    { id: "history", label: "History", title: "My reports",       icon: "i-history", hr: true },
     { id: "logs",    label: "Records", title: "Records",          icon: "i-list",  admin: true },
     { id: "users",   label: "Users",   title: "Users",            icon: "i-users", admin: true },
     { id: "account", label: "Account", title: "Account",          icon: "i-user" },
   ];
   function buildNav() {
-    const tabs = TABS.filter(t => !t.admin || me.isAdmin);
+    const tabs = TABS.filter(t => (!t.admin || me.isAdmin) && (!t.hr || !me.isAdmin));
     const html = tabs.map(t => `<button data-tab="${t.id}"><svg class="i"><use href="#${t.icon}"/></svg><span>${t.label}</span></button>`).join("");
     $("#bottom-nav").innerHTML = html;
     $("#side-nav").innerHTML = html;
@@ -531,6 +560,7 @@
     if (unsubLogs) { unsubLogs(); unsubLogs = null; }
     if (unsubUsers) { unsubUsers(); unsubUsers = null; }
     if (unsubNotifs) { unsubNotifs(); unsubNotifs = null; }
+    if (unsubMine) { unsubMine(); unsubMine = null; }
     if (!u) {
       me = null;
       const setup = await db.doc("config/setup").get().catch(() => null);
@@ -559,7 +589,7 @@
     }
     hideWelcome();
     renderPush(); enablePush(false);
-    if (me.isAdmin) { startLogs(); startUsers(); startNotifs(); }
+    if (me.isAdmin) { startLogs(); startUsers(); startNotifs(); } else { startMine(); }
   });
 
   // ---------- Setup / login ----------
@@ -774,29 +804,67 @@
     const q = $("#q").value.trim().toLowerCase();
     const list = allLogs.filter(c => (filter === "ALL" || c.verdict === filter) &&
       (!q || [c.subjectName, c.subjectId, c.fullName, c.username, c.extracted?.reference, c.extracted?.patientName, c.extracted?.patientNameEn, c.extracted?.facility].join(" ").toLowerCase().includes(q)));
-    $("#logs").innerHTML = list.length ? list.map(c => {
-      const daysLeft = c.expiresAt ? Math.max(0, Math.ceil((c.expiresAt.toMillis() - Date.now()) / 86400000)) : RETENTION_DAYS;
-      const dec = c.adminDecision ? `<span class="pill dec">${c.adminDecision === "confirmed_genuine" ? "HR: GENUINE" : "HR: FORGED"}</span>` : "";
-      return `<div class="log ${c.verdict}" data-id="${c.id}">
-        <div class="main">
-          <div class="name">${esc(c.subjectName || "Unknown employee")}</div>
-          <div class="meta">${esc(c.extracted?.authority || "?")} · ${fmtDate(c.extracted?.start)} → ${fmtDate(c.extracted?.end)}</div>
-          <div class="meta">by @${esc(c.username)} · ${fmtTs(c.createdAt)}</div>
-          <div class="meta">Deleted in ${daysLeft} day(s)</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><span class="pill ${c.verdict}">${LABEL[c.verdict]}</span>${dec}</div>
-      </div>`;
-    }).join("") : `<div class="empty">No records yet.</div>`;
+    $("#logs").innerHTML = list.length ? list.map(c => logCard(c, false)).join("") : `<div class="empty">No records yet.</div>`;
     $$("#logs .log").forEach(el => el.onclick = () => { const c = allLogs.find(x => x.id === el.dataset.id); if (c) renderDetail(c); });
   }
 
-  async function renderDetail(c, refresh) {
+  function logCard(c, mine) {
+    const daysLeft = c.expiresAt ? Math.max(0, Math.ceil((c.expiresAt.toMillis() - Date.now()) / 86400000)) : RETENTION_DAYS;
+    const dec = c.adminDecision ? `<span class="pill dec">${c.adminDecision === "confirmed_genuine" ? "HR: GENUINE" : "HR: FORGED"}</span>` : "";
+    return `<div class="log ${c.verdict}" data-id="${c.id}">
+      <div class="main">
+        <div class="name">${esc(c.subjectName || "Unknown employee")}</div>
+        <div class="meta">${esc(c.extracted?.authority || "?")} · ${fmtDate(c.extracted?.start)} → ${fmtDate(c.extracted?.end)}</div>
+        <div class="meta">${mine ? "" : `by @${esc(c.username)} · `}${fmtTs(c.createdAt)}</div>
+        <div class="meta">Deleted in ${daysLeft} day(s)</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><span class="pill ${c.verdict}">${LABEL[c.verdict]}</span>${dec}</div>
+    </div>`;
+  }
+
+  // ---------- HR user: own history ----------
+  function startMine() {
+    unsubMine = db.collection("checks").where("uid", "==", me.uid).limit(500).onSnapshot(s => {
+      myLogs = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+      renderMine();
+    }, e => { $("#mine").innerHTML = `<div class="empty">Could not load your reports: ${esc(errMsg(e))}</div>`; });
+  }
+  function renderMine() {
+    const n = (v) => myLogs.filter(c => c.verdict === v).length;
+    $("#mine-total").textContent = myLogs.length;
+    $("#mine-stats").innerHTML = [
+      ["ALL","", "All", myLogs.length], ["FORGED","r","Forged", n("FORGED")], ["REVIEW","a","Review", n("REVIEW")], ["GENUINE","g","Genuine", n("GENUINE")]
+    ].map(([k,c,l,v]) => `<div class="stat ${c} ${myFilter===k?"on":""}" data-mf="${k}"><b>${v}</b><span>${l}</span></div>`).join("");
+    $$("#mine-stats .stat").forEach(el => el.onclick = () => { myFilter = el.dataset.mf; renderMine(); });
+    const list = myLogs.filter(c => myFilter === "ALL" || c.verdict === myFilter);
+    $("#mine").innerHTML = list.length ? list.map(c => logCard(c, true)).join("") : `<div class="empty">No reports yet. Certificates you check will appear here.</div>`;
+    $$("#mine .log").forEach(el => el.onclick = () => { const c = myLogs.find(x => x.id === el.dataset.id); if (c) renderDetail(c, false, true); });
+  }
+
+  // ---------- Change password ----------
+  $("#f-pw").addEventListener("submit", async (e) => {
+    e.preventDefault(); const f = e.target; const err = $(".err", f); err.textContent = "";
+    if (f.npw.value !== f.npw2.value) { err.textContent = "The new passwords do not match."; return; }
+    if (f.npw.value === f.cur.value) { err.textContent = "The new password must be different."; return; }
+    const btn = $("button", f); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Updating…';
+    try {
+      const u = auth.currentUser;
+      await u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, f.cur.value));
+      await u.updatePassword(f.npw.value);
+      f.reset(); toast("Password updated");
+    } catch (x) {
+      const c = String(x.code || "");
+      err.textContent = /wrong-password|invalid-credential|invalid-login/.test(c) ? "Current password is incorrect." : /weak-password/.test(c) ? "New password is too weak." : /too-many-requests/.test(c) ? "Too many attempts. Try again later." : errMsg(x);
+    } finally { btn.disabled = false; btn.textContent = "Update password"; }
+  });
+
+  async function renderDetail(c, refresh, mine) {
     const x = c.extracted || {};
     const portal = PORTALS[x.authority] || PORTALS.MOHAP;
     const flags = (c.flags || []).map(f => `<div class="flag ${f.level}">${esc(f.message)}</div>`).join("") || `<div class="flag" style="background:var(--green-bg);color:#0b5d36">No issues found by automated checks.</div>`;
     const yn = (b) => b ? "Yes" : "No";
     const sheet = $("#sheet"); sheet.dataset.id = c.id;
-    const imgHtml = refresh ? ($(".imgbox", sheet)?.outerHTML || "") : `<div class="imgbox"><div class="empty">Loading image…</div></div>`;
+    const imgHtml = mine ? "" : refresh ? ($(".imgbox", sheet)?.outerHTML || "") : `<div class="imgbox"><div class="empty">Loading image…</div></div>`;
     sheet.innerHTML = `
       <div class="grab"></div>
       <div class="sheet-head"><b style="font-size:17px">${esc(c.subjectName || "Unknown employee")}</b><button class="btn ghost sm" id="m-close">Close</button></div>
@@ -817,7 +885,7 @@
       </dl></div>
       <div class="card"><h3>Submission</h3><dl class="kv">
         <dt>Employee</dt><dd>${esc(c.subjectName || "—")}${c.subjectId ? " · " + esc(c.subjectId) : ""}${c.subjectEntered ? "" : ` <span class="note">(read from certificate)</span>`}</dd>
-        <dt>Checked by</dt><dd>${esc(c.fullName)} (@${esc(c.username)})</dd>
+        ${mine ? "" : `<dt>Checked by</dt><dd>${esc(c.fullName)} (@${esc(c.username)})</dd>`}
         <dt>Checked at</dt><dd>${fmtTs(c.createdAt)}</dd>
         <dt>Auto-delete</dt><dd>${fmtTs(c.expiresAt)}</dd>
       </dl></div>
@@ -828,26 +896,26 @@
           <a class="btn" href="${portal.url}" target="_blank" rel="noopener noreferrer">Open portal</a>
         </div>
       </div>
-      <div class="card"><h3>HR decision</h3>
+      ${mine ? `<div class="notice"><svg class="i"><use href="#i-clock"/></svg><span>This report and the certificate image are deleted automatically on <b>${fmtTs(c.expiresAt)}</b>.</span></div>` : `<div class="card"><h3>HR decision</h3>
         <textarea id="m-note" rows="2" placeholder="Note (optional)">${esc(c.adminNote || "")}</textarea>
         <div class="row" style="margin-top:10px">
           <button class="btn ok" data-dec="confirmed_genuine">Confirmed genuine</button>
           <button class="btn danger" data-dec="confirmed_forged">Confirmed forged</button>
         </div>
         ${c.adminDecision ? `<p class="note">Current: <b>${c.adminDecision === "confirmed_genuine" ? "Confirmed genuine" : "Confirmed forged"}</b> · ${fmtTs(c.adminDecisionAt)}</p>` : ""}
-      </div>`;
+      </div>`}`;
     $("#modal").classList.remove("hidden");
     document.body.style.overflow = "hidden";
     $("#m-close").onclick = closeModal;
     $("#m-copy").onclick = () => navigator.clipboard.writeText(x.reference).then(() => toast("Reference copied"));
-    $$("[data-dec]", sheet).forEach(b => b.onclick = async () => {
+    if (!mine) $$("[data-dec]", sheet).forEach(b => b.onclick = async () => {
       b.disabled = true;
       try {
         await db.doc("checks/" + c.id).update({ adminDecision: b.dataset.dec, adminDecisionAt: firebase.firestore.FieldValue.serverTimestamp(), adminNote: $("#m-note").value.slice(0, 500) });
         toast("Decision saved");
       } catch (e) { toast(errMsg(e)); } finally { b.disabled = false; }
     });
-    if (!refresh) {
+    if (!refresh && !mine) {
       try {
         const url = await storage.ref(c.filePath).getDownloadURL();
         const box = $(".imgbox", sheet);

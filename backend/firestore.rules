@@ -19,7 +19,8 @@ service cloud.firestore {
 
     // Verification logs: ADMIN ONLY. Admin may only record a decision/note.
     match /checks/{id} {
-      allow read: if isAdmin();
+      // Admin sees all; an HR user sees only the checks they did
+      allow read: if isAdmin() || (request.auth != null && resource.data.uid == request.auth.uid);
       allow update: if isAdmin()
         && request.resource.data.diff(resource.data).affectedKeys()
              .hasOnly(['adminDecision', 'adminDecisionAt', 'adminNote']);

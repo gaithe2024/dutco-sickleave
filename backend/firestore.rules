@@ -26,6 +26,12 @@ service cloud.firestore {
       allow create, delete: if false;
     }
 
+    // Sent notifications log: admin read-only
+    match /notifications/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
     // Everything else (refs, etc.) is backend-only
     match /{document=**} {
       allow read, write: if false;

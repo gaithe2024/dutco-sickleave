@@ -172,6 +172,8 @@ exports.deleteUser = onCall(async (req) => {
   if (uid === me.uid) throw new HttpsError("failed-precondition", "You cannot delete your own account.");
   await admin.auth().deleteUser(uid).catch(() => {});
   await db.doc(`users/${uid}`).delete();
+  const toks = await db.collection("pushTokens").where("uid", "==", uid).get();
+  await Promise.all(toks.docs.map((d) => d.ref.delete()));
   return { ok: true }; // their verification logs stay until the 30-day purge
 });
 
@@ -408,6 +410,10 @@ exports.analyzeLeave = onCall(
       });
     }
 
+    if (verdict === "FORGED") {
+      await alertAdminsForged(subject.name || extracted.patientNameEn || extracted.patientName, user.username).catch((e) => console.error("push", e));
+    }
+
     // HR users see the full result, including the reasons.
     return {
       id: checkRef.id,
@@ -425,6 +431,75 @@ exports.analyzeLeave = onCall(
   }
 );
 
+
+// ---------- Push notifications ----------
+const tokenId = (t) => crypto.createHash("sha256").update(t).digest("hex").slice(0, 40);
+
+exports.savePushToken = onCall(async (req) => {
+  const auth = requireAuth(req);
+  const token = cleanStr(req.data?.token, 4096);
+  if (token.length < 20) throw new HttpsError("invalid-argument", "Invalid token.");
+  await db.doc(`pushTokens/${tokenId(token)}`).set({
+    uid: auth.uid, token, device: cleanStr(req.data?.device, 200),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+  return { ok: true };
+});
+
+async function pushTo(uids, title, body) {
+  const tokens = [];
+  if (uids === "all") {
+    (await db.collection("pushTokens").limit(2000).get()).forEach((d) => tokens.push(d.data().token));
+  } else {
+    for (let i = 0; i < uids.length; i += 30) {
+      const s = await db.collection("pushTokens").where("uid", "in", uids.slice(i, i + 30)).get();
+      s.forEach((d) => tokens.push(d.data().token));
+    }
+  }
+  let sent = 0, failed = 0;
+  for (let i = 0; i < tokens.length; i += 500) {
+    const batch = tokens.slice(i, i + 500);
+    const res = await admin.messaging().sendEachForMulticast({
+      tokens: batch,
+      notification: { title, body },
+      webpush: {
+        notification: { title, body, icon: "/icon-192.png", badge: "/icon-192.png" },
+        fcmOptions: { link: "https://dutco-sickleave.web.app/" },
+      },
+    });
+    sent += res.successCount; failed += res.failureCount;
+    await Promise.all(res.responses.map((r, j) => {
+      const code = r.error?.code || "";
+      if (!r.success && /not-registered|invalid-registration|invalid-argument/.test(code)) {
+        return db.doc(`pushTokens/${tokenId(batch[j])}`).delete().catch(() => {});
+      }
+      return null;
+    }));
+  }
+  return { devices: tokens.length, sent, failed };
+}
+
+exports.sendNotification = onCall(async (req) => {
+  const me = requireAdmin(req);
+  const title = cleanStr(req.data?.title, 60);
+  const body = cleanStr(req.data?.body, 300);
+  const target = cleanStr(req.data?.target, 128) || "all";
+  if (!title || !body) throw new HttpsError("invalid-argument", "Title and message are required.");
+  const r = await pushTo(target === "all" ? "all" : [target], title, body);
+  const sender = (await db.doc(`users/${me.uid}`).get()).data() || {};
+  await db.collection("notifications").add({
+    title, body, target, sentBy: sender.username || "", ...r,
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+  return r;
+});
+
+async function alertAdminsForged(subjectName, checkedBy) {
+  const admins = await db.collection("users").where("role", "==", "admin").get();
+  const uids = admins.docs.map((d) => d.id);
+  if (!uids.length) return;
+  await pushTo(uids, "Forged sick leave detected", `${subjectName || "An employee"}'s certificate was flagged as FORGED (checked by @${checkedBy}).`);
+}
 
 // ---------- 30-day retention ----------
 exports.purgeExpired = onSchedule({ schedule: "every day 03:00", timeZone: "Asia/Dubai" }, async () => {

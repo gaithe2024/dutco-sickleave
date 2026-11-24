@@ -20,7 +20,7 @@
   :root{
     --navy:#0b2545; --navy-2:#13315c; --ink:#0f172a; --ink-2:#334155; --muted:#64748b; --line:#e5e9f0;
     --bg:#f3f5f9; --card:#ffffff; --accent:#1d6fd8; --accent-2:#22b8cf; --accent-soft:#e8f1fd;
-    --green:#0f9d58; --green-bg:#e7f6ee; --amber:#c77700; --amber-bg:#fff4e0; --red:#d32f2f; --red-bg:#fdecec;
+    --green:#0f9d58; --green-bg:#e7f6ee; --amber:#c77700; --amber-bg:#fff4e0; --red:#d32f2f; --red-bg:#fdecec; --purple:#6d28d9; --purple-bg:#f1ebfd;
     --radius:16px; --shadow:0 1px 2px rgba(15,23,42,.05),0 6px 24px rgba(15,23,42,.06);
     --top:calc(56px + env(safe-area-inset-top)); --bottom:calc(64px + env(safe-area-inset-bottom));
   }
@@ -117,11 +117,12 @@
   .v-GENUINE{background:linear-gradient(135deg,#0f9d58,#12b76a)}
   .v-REVIEW{background:linear-gradient(135deg,#c77700,#f59e0b)}
   .v-FORGED{background:linear-gradient(135deg,#b71c1c,#e53935);animation:pulse 1.4s ease-in-out 2}
+  .v-UNATTESTED{background:linear-gradient(135deg,#5b21b6,#7c3aed)}
   @keyframes pulse{50%{transform:scale(1.02)}}
-  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
   .summary div{border-radius:12px;padding:12px 6px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.04em}
   .summary b{display:block;font-size:24px}
-  .summary .g{background:var(--green-bg);color:var(--green)} .summary .a{background:var(--amber-bg);color:var(--amber)} .summary .r{background:var(--red-bg);color:var(--red)}
+  .summary .g{background:var(--green-bg);color:var(--green)} .summary .a{background:var(--amber-bg);color:var(--amber)} .summary .r{background:var(--red-bg);color:var(--red)} .summary .p{background:var(--purple-bg);color:var(--purple)}
   .res{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px}
   .res .bar{padding:11px 14px;color:#fff;font-weight:800;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px}
   .res .bar small{font-weight:600;opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -133,6 +134,7 @@
   .flag{padding:10px 12px;border-radius:10px;margin-bottom:6px;font-size:13.5px}
   .flag.red{background:var(--red-bg);color:#8e1b1b;border-left:4px solid var(--red)}
   .flag.amber{background:var(--amber-bg);color:#7a4a00;border-left:4px solid var(--amber)}
+  .flag.purple{background:var(--purple-bg);color:#4c1d95;border-left:4px solid var(--purple);font-weight:700}
   .flag.green{background:var(--green-bg);color:#0b5d36;border-left:4px solid var(--green)}
 
   /* ---------- Records ---------- */
@@ -141,18 +143,18 @@
   .stat{flex:none;background:#fff;border-radius:999px;padding:9px 14px;box-shadow:var(--shadow);cursor:pointer;border:2px solid transparent;display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;white-space:nowrap}
   .stat b{font-size:15px}
   .stat.on{border-color:var(--accent);background:var(--accent-soft)}
-  .stat.g b{color:var(--green)} .stat.a b{color:var(--amber)} .stat.r b{color:var(--red)}
+  .stat.g b{color:var(--green)} .stat.a b{color:var(--amber)} .stat.r b{color:var(--red)} .stat.p b{color:var(--purple)}
   .search{position:relative;margin-bottom:12px}
   .search svg.i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#94a3b8;width:19px;height:19px}
   .search input{padding-left:40px;border-radius:14px;background:#fff;box-shadow:var(--shadow);border-color:transparent}
   .log{display:flex;gap:12px;align-items:center;background:#fff;border-radius:14px;padding:13px;margin-bottom:9px;box-shadow:var(--shadow);cursor:pointer;border-left:5px solid var(--line);transition:transform .08s}
   .log:active{transform:scale(.99)}
-  .log.GENUINE{border-left-color:var(--green)} .log.REVIEW{border-left-color:var(--amber)} .log.FORGED{border-left-color:var(--red);background:#fff7f7}
+  .log.GENUINE{border-left-color:var(--green)} .log.REVIEW{border-left-color:var(--amber)} .log.FORGED{border-left-color:var(--red);background:#fff7f7} .log.UNATTESTED{border-left-color:var(--purple);background:#faf7ff}
   .log .main{flex:1;min-width:0}
   .log .name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .log .meta{font-size:12px;color:var(--muted)}
   .pill{display:inline-block;font-size:10.5px;font-weight:800;padding:4px 8px;border-radius:999px;letter-spacing:.04em;white-space:nowrap}
-  .pill.GENUINE{background:var(--green-bg);color:var(--green)} .pill.REVIEW{background:var(--amber-bg);color:var(--amber)} .pill.FORGED{background:var(--red);color:#fff}
+  .pill.GENUINE{background:var(--green-bg);color:var(--green)} .pill.REVIEW{background:var(--amber-bg);color:var(--amber)} .pill.FORGED{background:var(--red);color:#fff} .pill.UNATTESTED{background:var(--purple);color:#fff}
   .pill.dec{background:#e8eefc;color:#1e40af} .pill.hr{background:#eef2f7;color:#475569}
 
   .hist-total{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff}
@@ -380,7 +382,7 @@
               <button class="action primary" id="b-cam"><span class="ic"><svg class="i"><use href="#i-camera"/></svg></span><span><b>Scan</b><span>Take a photo</span></span></button>
               <button class="action secondary" id="b-files"><span class="ic"><svg class="i"><use href="#i-upload"/></svg></span><span><b>Upload</b><span>Photos or PDF</span></span></button>
             </div>
-            <div class="accepted"><span class="chip">DHA</span><span class="chip">DOH ABU DHABI</span><span class="chip">MOHAP / EHS</span><span class="chip">ALL UAE</span><span class="chip">UP TO 10 FILES</span></div>
+            <div class="accepted"><span class="chip">DHA</span><span class="chip">DOH ABU DHABI</span><span class="chip">MOHAP / EHS</span><span class="chip">ALL UAE</span><span class="chip">ATTESTED ONLY</span><span class="chip">UP TO 10 FILES</span></div>
           </div>
           <input type="file" id="file-cam" accept="image/*" capture="environment" class="hidden">
           <input type="file" id="file" accept="image/*,application/pdf" multiple class="hidden">
@@ -519,7 +521,7 @@
   const errMsg = (e) => (e && (e.message || e.code)) ? String(e.message || e.code).replace(/^.*?\)\s*/, "") : "Something went wrong.";
   const fmtDate = (s) => { if (!s) return "—"; const [y,m,d] = s.split("-"); return `${d}/${m}/${y}`; };
   const fmtTs = (ts) => ts ? ts.toDate().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Dubai" }) : "—";
-  const LABEL = { GENUINE: "LIKELY GENUINE", REVIEW: "NEEDS REVIEW", FORGED: "FORGED" };
+  const LABEL = { GENUINE: "LIKELY GENUINE", REVIEW: "NEEDS REVIEW", FORGED: "FORGED", UNATTESTED: "NOT ATTESTED" };
   const initial = (s) => (s || "?").trim().charAt(0).toUpperCase() || "?";
 
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
@@ -734,8 +736,9 @@
     GENUINE: "All automated checks passed. Confirm the reference on the official portal before final approval.",
     REVIEW: "Some details need a closer look. See the reasons below.",
     FORGED: "This certificate failed verification. Do not accept it without confirming on the official portal.",
+    UNATTESTED: "Not attested. Do not proceed: ask the employee to attest this sick leave (MOHAP / TAMM / DHA) and upload the attested copy.",
   };
-  const BAR_BG = { GENUINE: "var(--green)", REVIEW: "var(--amber)", FORGED: "var(--red)" };
+  const BAR_BG = { GENUINE: "var(--green)", REVIEW: "var(--amber)", FORGED: "var(--red)", UNATTESTED: "var(--purple)" };
 
   function resultBody(r) {
     const portal = PORTALS[r.authority] || PORTALS.MOHAP;
@@ -771,6 +774,7 @@
           <div class="g"><b>${count("GENUINE")}</b>GENUINE</div>
           <div class="a"><b>${count("REVIEW")}</b>REVIEW</div>
           <div class="r"><b>${count("FORGED")}</b>FORGED</div>
+          <div class="p"><b>${count("UNATTESTED")}</b>NOT ATTESTED</div>
         </div>
       </div>
       ${list.map((r, i) => r.verdict === "ERROR" ? `
@@ -798,7 +802,7 @@
   function renderLogs() {
     const n = (v) => allLogs.filter(c => c.verdict === v).length;
     $("#stats").innerHTML = [
-      ["ALL","", "All", allLogs.length], ["FORGED","r","Forged", n("FORGED")], ["REVIEW","a","Review", n("REVIEW")], ["GENUINE","g","Genuine", n("GENUINE")]
+      ["ALL","", "All", allLogs.length], ["FORGED","r","Forged", n("FORGED")], ["UNATTESTED","p","Not attested", n("UNATTESTED")], ["REVIEW","a","Review", n("REVIEW")], ["GENUINE","g","Genuine", n("GENUINE")]
     ].map(([k,c,l,v]) => `<div class="stat ${c} ${filter===k?"on":""}" data-f="${k}"><b>${v}</b><span>${l}</span></div>`).join("");
     $$("#stats .stat").forEach(el => el.onclick = () => { filter = el.dataset.f; renderLogs(); });
 
@@ -834,7 +838,7 @@
     const n = (v) => myLogs.filter(c => c.verdict === v).length;
     $("#mine-total").textContent = myLogs.length;
     $("#mine-stats").innerHTML = [
-      ["ALL","", "All", myLogs.length], ["FORGED","r","Forged", n("FORGED")], ["REVIEW","a","Review", n("REVIEW")], ["GENUINE","g","Genuine", n("GENUINE")]
+      ["ALL","", "All", myLogs.length], ["FORGED","r","Forged", n("FORGED")], ["UNATTESTED","p","Not attested", n("UNATTESTED")], ["REVIEW","a","Review", n("REVIEW")], ["GENUINE","g","Genuine", n("GENUINE")]
     ].map(([k,c,l,v]) => `<div class="stat ${c} ${myFilter===k?"on":""}" data-mf="${k}"><b>${v}</b><span>${l}</span></div>`).join("");
     $$("#mine-stats .stat").forEach(el => el.onclick = () => { myFilter = el.dataset.mf; renderMine(); });
     const list = myLogs.filter(c => myFilter === "ALL" || c.verdict === myFilter);
@@ -869,8 +873,8 @@
     sheet.innerHTML = `
       <div class="grab"></div>
       <div class="sheet-head"><b style="font-size:17px">${esc(c.subjectName || "Unknown employee")}</b><button class="btn ghost sm" id="m-close">Close</button></div>
-      <div class="verdict v-${c.verdict}" style="padding:16px"><div class="big" style="font-size:22px">${LABEL[c.verdict]}</div>
-        <p>${esc(x.summary || "")}</p></div>
+      <div class="verdict v-${c.verdict}" style="padding:16px"><div class="big" style="font-size:22px">${LABEL[c.verdict] || esc(c.verdict)}</div>
+        <p>${c.verdict === "UNATTESTED" ? MSG.UNATTESTED : esc(x.summary || "")}</p></div>
       ${imgHtml}
       <div class="card"><h3>Findings</h3>${flags}</div>
       <div class="card"><h3>Certificate details</h3><dl class="kv">
@@ -882,6 +886,7 @@
         <dt>Doctor</dt><dd>${esc(x.doctor || "—")}</dd>
         <dt>Issued</dt><dd>${fmtDate(x.issueDate)}</dd>
         <dt>Leave</dt><dd>${fmtDate(x.start)} → ${fmtDate(x.end)} ${x.statedDays ? `(${x.statedDays} day(s) stated)` : ""}</dd>
+        <dt>Attested</dt><dd>${x.attested === undefined ? "—" : x.attested ? "Yes" + (x.attestationEvidence ? " · " + esc(x.attestationEvidence) : "") : "<b style='color:var(--purple)'>No</b>"}</dd>
         <dt>QR / Seal / Sign</dt><dd>${yn(x.hasQr)} / ${yn(x.hasSeal)} / ${yn(x.hasSignature)}</dd>
       </dl></div>
       <div class="card"><h3>Submission</h3><dl class="kv">

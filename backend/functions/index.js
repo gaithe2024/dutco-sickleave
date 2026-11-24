@@ -199,6 +199,8 @@ Read it carefully and reply with ONLY one JSON object, no other text, with exact
   "leave_end": "YYYY-MM-DD" | "",
   "stated_days": number | null,         // number of days written on the certificate
   "has_qr_code": boolean,
+  "is_attested": boolean,              // true ONLY if the certificate shows it is ATTESTED / officially verified by a UAE health authority (see rules)
+  "attestation_evidence": string,      // what proves the attestation (e.g. "MOHAP e-attestation footer with attestation no. 12345 and QR"), "" if none
   "has_stamp_or_seal": boolean,
   "has_signature": boolean,
   "image_quality": "good" | "poor" | "unreadable",
@@ -211,7 +213,8 @@ Rules:
 - Look closely for manipulation, especially in DATES, NUMBER OF DAYS, NAMES and the REFERENCE NUMBER: digits in a different font, size, weight, colour or baseline; misaligned or overwritten characters; white boxes or smudges behind text; inconsistent background/compression around specific fields; pixelation differences; mismatched Arabic vs English values on the same certificate; text that looks typed onto a scanned page; logos or seals that look pasted; a template with blank or placeholder fields; a screenshot of an editing app.
 - If Arabic and English sections show different dates or days, that is a HIGH severity sign.
 - Only report signs you can actually see. Normal photo blur, glare or folds are not tampering. Do not invent problems.
-- If the file is not a sick leave certificate at all, set is_sick_leave_document to false.`;
+- If the file is not a sick leave certificate at all, set is_sick_leave_document to false.
+- ATTESTATION: set is_attested to true only when you can see clear proof that a UAE health authority attested or officially issued it: an attestation stamp, e-attestation block or footer (e.g. "Attested", "Certified", "مصدق", "تم التصديق", "توثيق"), an attestation / certification number, a MOHAP / EHS / DOH (TAMM) / DHA / SHA verification QR with attestation text, or a DHA e-certificate with "Barcode Number" and "PIN" for online verification. A clinic or hospital's own stamp, signature or logo alone is NOT attestation.`;
 
 async function callClaude(base64, mediaType) {
   const block = mediaType === "application/pdf"
@@ -261,7 +264,7 @@ async function officialCheck(x) {
   return { source: "DHA", barcode, ...r };
 }
 
-function runChecks(x, subject, dup, official) {
+function runChecks(x, subject, dup, official, attested) {
   const flags = [];
   const red = (code, msg) => flags.push({ level: "red", code, message: msg });
   const amber = (code, msg) => flags.push({ level: "amber", code, message: msg });
@@ -328,8 +331,14 @@ function runChecks(x, subject, dup, official) {
     else amber("ALREADY_CHECKED", `This certificate was already checked on ${when}${dup.checkedBy ? ` by @${dup.checkedBy}` : ""}${dup.subjectName ? ` for "${dup.subjectName}"` : ""}.`);
   }
 
-  const verdict = flags.some((f) => f.level === "red") ? "FORGED"
-    : flags.some((f) => f.level === "amber") ? "REVIEW" : "GENUINE";
+  // Forgery always wins. Otherwise a certificate that is not attested is rejected
+  // until the employee attests it (company policy), whatever the other checks say.
+  let verdict;
+  if (flags.some((f) => f.level === "red")) verdict = "FORGED";
+  else if (!attested) {
+    verdict = "UNATTESTED";
+    flags.unshift({ level: "purple", code: "NOT_ATTESTED", message: "NOT ATTESTED: this sick leave has not been attested by a UAE health authority. Ask the employee to attest it (MOHAP / TAMM / DHA) before proceeding." });
+  } else verdict = flags.some((f) => f.level === "amber") ? "REVIEW" : "GENUINE";
   return { verdict, flags };
 }
 
@@ -373,13 +382,15 @@ exports.analyzeLeave = onCall(
     let refKey = null;
     const refNorm = cleanStr(x.reference_number || x.dha_barcode, 80).toUpperCase().replace(/[^A-Z0-9]/g, "");
     const official = await officialCheck(x);
+    // Company policy: only attested certificates are accepted.
+    const attested = !!x.is_attested || (official && official.status === "verified");
     if (refNorm.length >= 4) {
       refKey = crypto.createHash("sha256").update(`${x.issuing_authority}|${refNorm}`).digest("hex").slice(0, 40);
       const r = await db.doc(`refs/${refKey}`).get();
       if (r.exists) dup = r.data();
     }
 
-    const { verdict, flags } = runChecks(x, subject, dup, official);
+    const { verdict, flags } = runChecks(x, subject, dup, official, attested);
     const now = admin.firestore.Timestamp.now();
     const expiresAt = admin.firestore.Timestamp.fromMillis(now.toMillis() + RETENTION_DAYS * DAY);
 
@@ -397,6 +408,8 @@ exports.analyzeLeave = onCall(
       end: cleanStr(x.leave_end, 10),
       statedDays: typeof x.stated_days === "number" ? x.stated_days : null,
       hasQr: !!x.has_qr_code,
+      attested: !!attested,
+      attestationEvidence: cleanStr(x.attestation_evidence, 200),
       hasSeal: !!x.has_stamp_or_seal,
       hasSignature: !!x.has_signature,
       quality: cleanStr(x.image_quality, 12),
@@ -443,6 +456,7 @@ exports.analyzeLeave = onCall(
       verdict,
       flags: flags.map((f) => ({ level: f.level, message: f.message })),
       official: official ? { source: official.source, status: official.status } : null,
+      attested: !!attested,
       authority: extracted.authority,
       reference: extracted.reference,
       patientName: extracted.patientNameEn || extracted.patientName,

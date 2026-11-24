@@ -133,6 +133,7 @@
   .flag{padding:10px 12px;border-radius:10px;margin-bottom:6px;font-size:13.5px}
   .flag.red{background:var(--red-bg);color:#8e1b1b;border-left:4px solid var(--red)}
   .flag.amber{background:var(--amber-bg);color:#7a4a00;border-left:4px solid var(--amber)}
+  .flag.green{background:var(--green-bg);color:#0b5d36;border-left:4px solid var(--green)}
 
   /* ---------- Records ---------- */
   .stats{display:flex;gap:8px;overflow-x:auto;margin:0 -16px 12px;padding:2px 16px 4px;scrollbar-width:none}
@@ -760,7 +761,7 @@
     let html;
     if (list.length === 1 && list[0].verdict !== "ERROR") {
       const r = list[0];
-      html = `<div class="verdict v-${r.verdict}"><div class="big">${LABEL[r.verdict]}</div><p>${MSG[r.verdict]}</p></div>
+      html = `<div class="verdict v-${r.verdict}"><div class="big">${LABEL[r.verdict]}</div><p>${r.verdict === "GENUINE" && r.official && r.official.status === "verified" ? `Verified on ${esc(r.official.source)}'s official service. Check that the name and dates match the official record.` : MSG[r.verdict]}</p></div>
         <div class="card">${resultBody(r)}</div>`;
     } else {
       html = `

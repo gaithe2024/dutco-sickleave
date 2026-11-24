@@ -187,6 +187,8 @@ Read it carefully and reply with ONLY one JSON object, no other text, with exact
   "issuing_authority": "DHA" | "DOH" | "MOHAP" | "EHS" | "SHA" | "OTHER_UAE" | "NON_UAE" | "UNKNOWN",
   "emirate": string,
   "reference_number": string,          // sick leave / certificate / attestation number exactly as printed, "" if none
+  "dha_barcode": string,               // DHA documents only: the "Barcode Number" printed near the bottom, digits/letters exactly, "" if none
+  "dha_pin": string,                   // DHA documents only: the "PIN" printed next to the barcode number, exactly, "" if none
   "patient_name": string,              // as printed
   "patient_name_english": string,      // English transliteration if printed in Arabic
   "patient_id": string,                // Emirates ID / MRN / passport, as printed
@@ -248,10 +250,29 @@ async function callClaude(base64, mediaType) {
 
 function idDigits(s) { return String(s || "").replace(/\D/g, ""); }
 
-function runChecks(x, subject, dup) {
+const { dhaVerify } = require("./dha");
+
+async function officialCheck(x) {
+  if (x.issuing_authority !== "DHA") return null;
+  const barcode = cleanStr(x.dha_barcode, 40).replace(/\s+/g, "");
+  const pin = cleanStr(x.dha_pin, 20).replace(/\s+/g, "");
+  if (!barcode || !pin) return { source: "DHA", status: "no_code" };
+  const r = await dhaVerify(barcode, pin);
+  return { source: "DHA", barcode, ...r };
+}
+
+function runChecks(x, subject, dup, official) {
   const flags = [];
   const red = (code, msg) => flags.push({ level: "red", code, message: msg });
   const amber = (code, msg) => flags.push({ level: "amber", code, message: msg });
+  const green = (code, msg) => flags.push({ level: "green", code, message: msg });
+
+  if (official) {
+    if (official.status === "verified") green("OFFICIAL_VERIFIED", `Found on ${official.source}'s official verification service (barcode ${official.barcode}). Make sure the name and dates match the official record.`);
+    else if (official.status === "not_found") red("OFFICIAL_NOT_FOUND", `${official.source}'s official verification service has NO record of this barcode and PIN.`);
+    else if (official.status === "no_code") amber("OFFICIAL_NO_CODE", `${official.source} barcode / PIN could not be read, so the official check was not done. Verify on the portal.`);
+    else amber("OFFICIAL_UNAVAILABLE", `${official.source}'s official verification service did not respond. Verify on the portal.`);
+  }
 
   if (!x.is_sick_leave_document) red("NOT_SICK_LEAVE", "The file is not a sick leave certificate.");
   if (x.image_quality === "unreadable") amber("UNREADABLE", "The image is unreadable — ask the employee for a clearer copy.");
@@ -350,14 +371,15 @@ exports.analyzeLeave = onCall(
     // Has this reference number been checked before (by anyone)?
     let dup = null;
     let refKey = null;
-    const refNorm = cleanStr(x.reference_number, 80).toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const refNorm = cleanStr(x.reference_number || x.dha_barcode, 80).toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const official = await officialCheck(x);
     if (refNorm.length >= 4) {
       refKey = crypto.createHash("sha256").update(`${x.issuing_authority}|${refNorm}`).digest("hex").slice(0, 40);
       const r = await db.doc(`refs/${refKey}`).get();
       if (r.exists) dup = r.data();
     }
 
-    const { verdict, flags } = runChecks(x, subject, dup);
+    const { verdict, flags } = runChecks(x, subject, dup, official);
     const now = admin.firestore.Timestamp.now();
     const expiresAt = admin.firestore.Timestamp.fromMillis(now.toMillis() + RETENTION_DAYS * DAY);
 
@@ -398,6 +420,7 @@ exports.analyzeLeave = onCall(
       verdict,
       flags,
       extracted,
+      official: official ? { source: official.source, status: official.status, barcode: official.barcode || "", details: cleanStr(official.details || "", 1500), note: cleanStr(official.note || "", 200) } : null,
       refKey,
       model: CLAUDE_MODEL,
       adminDecision: null,
@@ -419,6 +442,7 @@ exports.analyzeLeave = onCall(
       id: checkRef.id,
       verdict,
       flags: flags.map((f) => ({ level: f.level, message: f.message })),
+      official: official ? { source: official.source, status: official.status } : null,
       authority: extracted.authority,
       reference: extracted.reference,
       patientName: extracted.patientNameEn || extracted.patientName,

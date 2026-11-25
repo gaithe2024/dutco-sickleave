@@ -521,6 +521,14 @@
   const errMsg = (e) => (e && (e.message || e.code)) ? String(e.message || e.code).replace(/^.*?\)\s*/, "") : "Something went wrong.";
   const fmtDate = (s) => { if (!s) return "—"; const [y,m,d] = s.split("-"); return `${d}/${m}/${y}`; };
   const fmtTs = (ts) => ts ? ts.toDate().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Dubai" }) : "—";
+  // Only https links on UAE government / health-authority sites become buttons.
+  const offUrl = (u) => {
+    try {
+      const x = new URL(String(u || ""));
+      const h = x.hostname.toLowerCase();
+      return x.protocol === "https:" && /(^|\.)(gov\.ae|abudhabi|abudhabi\.ae|tamm\.abudhabi|malaffi\.ae|seha\.ae)$/.test(h) ? x.href : "";
+    } catch { return ""; }
+  };
   const LABEL = { GENUINE: "LIKELY GENUINE", REVIEW: "NEEDS REVIEW", FORGED: "FORGED", UNATTESTED: "NOT ATTESTED" };
   const initial = (s) => (s || "?").trim().charAt(0).toUpperCase() || "?";
 
@@ -753,7 +761,7 @@
       ${reasons ? `<div class="reasons">${reasons}</div>` : ""}
       <div class="row" style="margin-top:14px">
         <button class="btn ghost sm" data-copy="${esc(r.reference || "")}" ${r.reference ? "" : "disabled"}>Copy reference</button>
-        <a class="btn sm" href="${portal.url}" target="_blank" rel="noopener noreferrer">Open ${esc(r.authority && r.authority !== "UNKNOWN" ? r.authority : "MOHAP")} portal</a>
+        ${offUrl(r.verificationUrl) ? `<a class="btn sm" href="${esc(offUrl(r.verificationUrl))}" target="_blank" rel="noopener noreferrer">Open verification link</a>` : `<a class="btn sm" href="${portal.url}" target="_blank" rel="noopener noreferrer">Open ${esc(r.authority && r.authority !== "UNKNOWN" ? r.authority : "MOHAP")} portal</a>`}
       </div>`;
   }
 
@@ -899,7 +907,7 @@
         <p class="sub" style="margin-bottom:10px">${esc(portal.name)}</p>
         <div class="row">
           <button class="btn ghost" id="m-copy" ${x.reference ? "" : "disabled"}>Copy reference</button>
-          <a class="btn" href="${portal.url}" target="_blank" rel="noopener noreferrer">Open portal</a>
+          ${offUrl(x.verificationUrl) ? `<a class="btn" href="${esc(offUrl(x.verificationUrl))}" target="_blank" rel="noopener noreferrer">Open verification link</a>` : `<a class="btn" href="${portal.url}" target="_blank" rel="noopener noreferrer">Open portal</a>`}
         </div>
       </div>
       ${mine ? `<div class="notice"><svg class="i"><use href="#i-clock"/></svg><span>This report and the certificate image are deleted automatically on <b>${fmtTs(c.expiresAt)}</b>.</span></div>` : `<div class="card"><h3>HR decision</h3>

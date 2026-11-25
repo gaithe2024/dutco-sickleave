@@ -230,7 +230,7 @@ async function callClaude(base64, mediaType) {
     },
     body: JSON.stringify({
       model: CLAUDE_MODEL,
-      max_tokens: 2000,
+      max_tokens: 6000,
       messages: [{ role: "user", content: [block, { type: "text", text: PROMPT }] }],
     }),
   });
@@ -243,11 +243,16 @@ async function callClaude(base64, mediaType) {
   const text = (json.content || []).filter((c) => c.type === "text").map((c) => c.text).join("\n");
   const start = text.indexOf("{");
   const end = text.lastIndexOf("}");
-  if (start < 0 || end < 0) throw new HttpsError("internal", "Could not read the certificate. Try a clearer photo.");
+  const fail = (why) => {
+    console.error("Claude reply not usable:", why, "stop_reason:", json.stop_reason,
+      "usage:", JSON.stringify(json.usage || {}), "text:", text.slice(0, 300), "...", text.slice(-300));
+    return new HttpsError("internal", "Could not read the certificate. Try a clearer photo.");
+  };
+  if (start < 0 || end < 0) throw fail("no JSON");
   try {
     return JSON.parse(text.slice(start, end + 1));
-  } catch {
-    throw new HttpsError("internal", "Could not read the certificate. Try a clearer photo.");
+  } catch (e) {
+    throw fail("bad JSON: " + e.message);
   }
 }
 

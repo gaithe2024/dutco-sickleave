@@ -201,6 +201,7 @@ Read it carefully and reply with ONLY one JSON object, no other text, with exact
   "has_qr_code": boolean,
   "is_attested": boolean,              // true ONLY if the certificate shows it is ATTESTED / officially verified by a UAE health authority (see rules)
   "attestation_evidence": string,      // what proves the attestation (e.g. "MOHAP e-attestation footer with attestation no. 12345 and QR"), "" if none
+  "verification_url": string,          // any web address printed on the certificate for checking it online (copy exactly, e.g. "https://www.doh.gov.ae/..."), "" if none
   "has_stamp_or_seal": boolean,
   "has_signature": boolean,
   "image_quality": "good" | "poor" | "unreadable",
@@ -214,7 +215,11 @@ Rules:
 - If Arabic and English sections show different dates or days, that is a HIGH severity sign.
 - Only report signs you can actually see. Normal photo blur, glare or folds are not tampering. Do not invent problems.
 - If the file is not a sick leave certificate at all, set is_sick_leave_document to false.
-- ATTESTATION: set is_attested to true only when you can see clear proof that a UAE health authority attested or officially issued it: an attestation stamp, e-attestation block or footer (e.g. "Attested", "Certified", "مصدق", "تم التصديق", "توثيق"), an attestation / certification number, a MOHAP / EHS / DOH (TAMM) / DHA / SHA verification QR with attestation text, or a DHA e-certificate with "Barcode Number" and "PIN" for online verification. A clinic or hospital's own stamp, signature or logo alone is NOT attestation.`;
+- ATTESTATION: set is_attested to true when the certificate shows that a UAE health authority attested it OR officially issued it through its e-system. Any ONE of these is enough:
+  * an attestation stamp, e-attestation block or footer (e.g. "Attested", "Certified", "مصدق", "تم التصديق", "توثيق"), or an attestation / certification number;
+  * an online verification link, verification code or QR printed on the certificate that belongs to a UAE health authority or government system (e.g. doh.gov.ae, tamm.abudhabi, dha.gov.ae, mohap.gov.ae, ehs.gov.ae, malaffi.ae, seha.ae, any *.gov.ae), typically with the authority's official reference number;
+  * a DHA e-certificate with "Barcode Number" and "PIN" for online verification.
+  A clinic or hospital's own stamp, signature or logo ALONE, with nothing from the list above, is NOT attestation. Always copy any verification link into verification_url.`;
 
 async function callClaude(base64, mediaType) {
   const block = mediaType === "application/pdf"
@@ -269,11 +274,30 @@ async function officialCheck(x) {
   return { source: "DHA", barcode, ...r };
 }
 
-function runChecks(x, subject, dup, official, attested) {
+// A verification link printed on the certificate. Official = a UAE government / health-authority site.
+const OFFICIAL_HOST_RE = /(^|\.)(gov\.ae|abudhabi|abudhabi\.ae|tamm\.abudhabi|malaffi\.ae|seha\.ae)$/i;
+function verificationLink(raw) {
+  let t = cleanStr(raw, 400).replace(/\s+/g, "");
+  if (!t) return null;
+  if (!/^https?:\/\//i.test(t)) t = "https://" + t;
+  try {
+    const u = new URL(t);
+    if (!/^https?:$/.test(u.protocol) || !u.hostname.includes(".")) return null;
+    const host = u.hostname.toLowerCase().replace(/^www\./, "");
+    return { url: u.href, host, official: OFFICIAL_HOST_RE.test(host) };
+  } catch { return null; }
+}
+
+function runChecks(x, subject, dup, official, attested, vlink) {
   const flags = [];
   const red = (code, msg) => flags.push({ level: "red", code, message: msg });
   const amber = (code, msg) => flags.push({ level: "amber", code, message: msg });
   const green = (code, msg) => flags.push({ level: "green", code, message: msg });
+
+  if (vlink) {
+    if (vlink.official) green("OFFICIAL_LINK", `Has an official verification link (${vlink.host}). Open it to confirm the record.`);
+    else amber("UNOFFICIAL_LINK", `The verification link points to ${vlink.host}, which is not a UAE government site. Check it carefully.`);
+  }
 
   if (official) {
     if (official.status === "verified") green("OFFICIAL_VERIFIED", `Found on ${official.source}'s official verification service (barcode ${official.barcode}). Make sure the name and dates match the official record.`);
@@ -388,14 +412,15 @@ exports.analyzeLeave = onCall(
     const refNorm = cleanStr(x.reference_number || x.dha_barcode, 80).toUpperCase().replace(/[^A-Z0-9]/g, "");
     const official = await officialCheck(x);
     // Company policy: only attested certificates are accepted.
-    const attested = !!x.is_attested || (official && official.status === "verified");
+    const vlink = verificationLink(x.verification_url);
+    const attested = !!x.is_attested || (official && official.status === "verified") || (vlink && vlink.official);
     if (refNorm.length >= 4) {
       refKey = crypto.createHash("sha256").update(`${x.issuing_authority}|${refNorm}`).digest("hex").slice(0, 40);
       const r = await db.doc(`refs/${refKey}`).get();
       if (r.exists) dup = r.data();
     }
 
-    const { verdict, flags } = runChecks(x, subject, dup, official, attested);
+    const { verdict, flags } = runChecks(x, subject, dup, official, attested, vlink);
     const now = admin.firestore.Timestamp.now();
     const expiresAt = admin.firestore.Timestamp.fromMillis(now.toMillis() + RETENTION_DAYS * DAY);
 
@@ -415,6 +440,8 @@ exports.analyzeLeave = onCall(
       hasQr: !!x.has_qr_code,
       attested: !!attested,
       attestationEvidence: cleanStr(x.attestation_evidence, 200),
+      verificationUrl: vlink && vlink.official ? vlink.url : "",
+      verificationHost: vlink ? vlink.host : "",
       hasSeal: !!x.has_stamp_or_seal,
       hasSignature: !!x.has_signature,
       quality: cleanStr(x.image_quality, 12),
@@ -462,6 +489,7 @@ exports.analyzeLeave = onCall(
       flags: flags.map((f) => ({ level: f.level, message: f.message })),
       official: official ? { source: official.source, status: official.status } : null,
       attested: !!attested,
+      verificationUrl: vlink && vlink.official ? vlink.url : "",
       authority: extracted.authority,
       reference: extracted.reference,
       patientName: extracted.patientNameEn || extracted.patientName,

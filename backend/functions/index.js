@@ -264,6 +264,7 @@ async function callClaude(base64, mediaType) {
 function idDigits(s) { return String(s || "").replace(/\D/g, ""); }
 
 const { dhaVerify } = require("./dha");
+const { checkOfficialLink } = require("./linkcheck");
 
 async function officialCheck(x) {
   if (x.issuing_authority !== "DHA") return null;
@@ -295,7 +296,15 @@ function runChecks(x, subject, dup, official, attested, vlink) {
   const green = (code, msg) => flags.push({ level: "green", code, message: msg });
 
   if (vlink) {
-    if (vlink.official) green("OFFICIAL_LINK", `Has an official verification link (${vlink.host}). Open it to confirm the record.`);
+    const c = vlink.check || {};
+    if (vlink.official && c.status === "verified") {
+      const got = [c.refFound && "reference", c.nameFound && "name", c.datesFound && "dates"].filter(Boolean).join(", ");
+      green("OFFICIAL_LINK_VERIFIED", `Checked automatically on ${vlink.host}: the official page shows this certificate (matching ${got}).${c.datesFound ? "" : " Compare the dates on the page."}`);
+    } else if (vlink.official && c.status === "not_found") {
+      amber("OFFICIAL_LINK_NOT_FOUND", `Checked automatically on ${vlink.host}: the official page says this certificate is not found or not valid. Open the link to confirm (it may have been misread).`);
+    } else if (vlink.official && c.status === "no_match") {
+      amber("OFFICIAL_LINK_NO_MATCH", `Opened the official link on ${vlink.host}, but the page does not show this certificate's reference number or patient name. Open it and compare.`);
+    } else if (vlink.official) green("OFFICIAL_LINK", `Has an official verification link (${vlink.host}). It could not be read automatically, so open it to confirm the record.`);
     else amber("UNOFFICIAL_LINK", `The verification link points to ${vlink.host}, which is not a UAE government site. Check it carefully.`);
   }
 
@@ -413,6 +422,17 @@ exports.analyzeLeave = onCall(
     const official = await officialCheck(x);
     // Company policy: only attested certificates are accepted.
     const vlink = verificationLink(x.verification_url);
+    if (vlink && vlink.official) {
+      // Open the official link ourselves and read what the authority's page says.
+      vlink.check = await checkOfficialLink(vlink.url, {
+        reference: x.reference_number,
+        patientName: x.patient_name_english || x.patient_name,
+        start: x.leave_start,
+        end: x.leave_end,
+      });
+      const c = vlink.check;
+      console.log("link check", vlink.host, c.status, c.http || "", c.type || "", c.bytes || "", c.note || "");
+    }
     const attested = !!x.is_attested || (official && official.status === "verified") || (vlink && vlink.official);
     if (refNorm.length >= 4) {
       refKey = crypto.createHash("sha256").update(`${x.issuing_authority}|${refNorm}`).digest("hex").slice(0, 40);
@@ -442,6 +462,7 @@ exports.analyzeLeave = onCall(
       attestationEvidence: cleanStr(x.attestation_evidence, 200),
       verificationUrl: vlink && vlink.official ? vlink.url : "",
       verificationHost: vlink ? vlink.host : "",
+      linkCheck: vlink && vlink.check ? { status: vlink.check.status, refFound: !!vlink.check.refFound, nameFound: !!vlink.check.nameFound, datesFound: !!vlink.check.datesFound } : null,
       hasSeal: !!x.has_stamp_or_seal,
       hasSignature: !!x.has_signature,
       quality: cleanStr(x.image_quality, 12),
